@@ -1,0 +1,12 @@
+<IfModule mod_mime.c>
+    AddType application/javascript js mjs
+    AddType text/javascript js mjs
+    AddType application/javascript .js
+
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type"
+</IfModule>

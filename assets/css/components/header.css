@@ -1,0 +1,169 @@
+/* ===== HEADER STYLES ===== */
+.header {
+    background-color: #fff;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+/* Desktop Navigation */
+.nav-desktop ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 30px;
+}
+
+.nav-desktop a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.3s;
+    position: relative;
+    padding: 5px 0;
+}
+
+.nav-desktop a:hover {
+    color: #d32f2f;
+}
+
+.nav-desktop a.active {
+    color: #d32f2f;
+    font-weight: 700;
+}
+
+.nav-desktop a.active::after,
+.nav-desktop a:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #d32f2f;
+}
+
+.cta-button {
+    background-color: #d32f2f;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+    background-color: #b71c1c;
+    text-decoration: none;
+}
+
+.cta-button:hover::after {
+    display: none;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+}
+
+.hamburger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 24px;
+    width: 30px;
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: #333;
+    transition: all 0.3s ease;
+}
+
+.nav-mobile {
+    position: fixed;
+    top: 80px;
+    left: -100%;
+    width: 80%;
+    height: calc(100vh - 80px);
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: left 0.4s ease;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.nav-mobile.active {
+    left: 0;
+}
+
+.nav-mobile ul {
+    list-style: none;
+    padding: 20px;
+}
+
+.nav-mobile li {
+    margin-bottom: 15px;
+}
+
+.nav-mobile a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .nav-desktop {
+        display: none;
+    }
+    
+    .mobile-nav {
+        display: block;
+    }
+    
+    .logo img {
+        height: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        width: 95%;
+    }
+    
+    .logo img {
+        height: 35px;
+    }
+}
