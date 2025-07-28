@@ -18,22 +18,24 @@ include(__DIR__ . '/includes/contact-float.php');
 <!-- ===== 3 CĂI RAPIDE ===== -->
 <section class="quick-contact">
   <div class="container grid-3">
-    <a href="tel:+49301234567" class="quick-card">
+    <a href="tel:+491626781242" class="quick-card">
       <i class="fas fa-phone"></i>
       <h3>Rufen Sie uns an</h3>
-      <span>+49 30 123 45 67</span>
+      <span>+49 162 678 12 42</span>
     </a>
 
-    <a href="https://wa.me/491701234567?text=Guten%20Tag%2C%20ich%20m%C3%B6chte%20gerne%20ein%20Angebot%20f%C3%BCr%20mein%20Dach%20anfragen." target="_blank" class="quick-card">
+    <a href="https://wa.me/491626781242?text=Guten%20Tag%2C%20ich%20m%C3%B6chte%20gerne%20ein%20Angebot%20f%C3%BCr%20mein%20Dach%20anfragen" target="_blank" class="quick-card">
       <i class="fab fa-whatsapp"></i>
       <h3>WhatsApp</h3>
-      <span>0170 123 45 67</span>
+      <span>+49 162 678 1 242</span>
     </a>
 
-    <a href="mailto:info@dachdecker-muenchen.de" class="quick-card">
+    <a href="mailto:info@hausmeistermichael-gmbh.de
+" class="quick-card">
       <i class="fas fa-envelope"></i>
       <h3>E-Mail</h3>
-      <span id="mail">info@dachdecker-muenchen.de</span>
+      <span id="mail">info@hausmeistermichael-gmbh.de
+</span>
     </a>
   </div>
 </section>
@@ -42,55 +44,67 @@ include(__DIR__ . '/includes/contact-float.php');
 <section id="contact-form" class="form-section">
   <div class="container">
     <h2>Anfrageformular</h2>
+
     <form action="php/send-mail.php" method="POST" id="ajaxForm" novalidate>
       <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
+
       <div class="grid-2">
         <label>
           Vor- & Nachname *
           <input type="text" name="name" required>
         </label>
+
         <label>
           Telefon
           <input type="tel" name="phone">
         </label>
+
         <label>
           E-Mail
           <input type="email" name="email">
         </label>
+
         <label>
           Adresse des Objekts *
           <input type="text" name="address" required>
         </label>
+
         <label>
           Art der Dienstleistung *
           <select name="service" required>
             <option value="">Bitte wählen</option>
-            <option>Neueindeckung</option>
-            <option>Dachsanierung</option>
-            <option>Dämmung</option>
-            <option>Solarmontage</option>
-            <option>Notdienst</option>
+            <option value="Neueindeckung">Neueindeckung</option>
+            <option value="Dachsanierung">Dachsanierung</option>
+            <option value="Dämmung">Dämmung</option>
+            <option value="Solarmontage">Solarmontage</option>
+            <option value="Notdienst">Notdienst</option>
           </select>
         </label>
+
         <label>
           Wunschtermin
           <input type="date" name="date">
         </label>
       </div>
+
       <label>
         Nachricht / weitere Angaben
         <textarea name="message" rows="4"></textarea>
       </label>
+
       <label class="gdpr">
         <input type="checkbox" name="gdpr" required>
         Ich stimme der <a href="privacy.php" target="_blank">Datenschutzerklärung</a> zu. *
       </label>
+
       <!-- honeypot -->
       <input type="text" name="website" style="display:none">
+
       <button type="submit" class="btn btn--primary">
         <span>Absenden</span>
         <i class="fas fa-spinner fa-spin" style="display:none;"></i>
       </button>
+
       <p class="form-msg"></p>
     </form>
   </div>
@@ -110,13 +124,13 @@ include(__DIR__ . '/includes/contact-float.php');
 
     <div class="address">
       <h3>Adresse & Öffnungszeiten</h3>
-      <p>Dachdecker Meisterbetrieb<br>Musterstraße 12<br>80331 München</p>
+      <p>Landsberger Allee 366<br> 12681 Berlin <br> Deutschland</p>
       <table>
         <tr><td>Mo – Fr:</td><td>07:00 – 17:00</td></tr>
         <tr><td>Sa:</td><td>08:00 – 12:00</td></tr>
         <tr><td>So:</td><td>Geschlossen</td></tr>
       </table>
-      <p><em>Nur 15 min von München Zentrum</em></p>
+      <p><em>Nur 15 min von Berlin Zentrum</em></p>
     </div>
   </div>
 </section>
@@ -152,8 +166,8 @@ if (!$open): ?>
 <div class="emergency-banner">
   <div class="container">
     <i class="fas fa-exclamation-triangle"></i>
-    <span><strong>Notdienst:</strong> +49 170 123 45 67</span>
-    <a href="sms:+491701234567?body=Notdienst%20Anfrage" class="btn btn--small">SMS senden</a>
+    <span><strong>Notdienst:</strong> +49 162 678 12 42</span>
+    <a href="sms:+491626781242?body=Notdienst%20Anfrage" class="btn btn--small">SMS senden</a>
   </div>
 </div>
 <?php endif; ?>
@@ -178,9 +192,8 @@ if (!$open): ?>
 </section>
 
 <!-- ===== SCRIPTS ===== -->
-<script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfd6IwrAAAAAAq9AnqQDYHssazEzrcAQaCfQLDj"></script>
 <script type="module">
-  // AJAX formular
   import {initContactForm} from '<?= $assets_path ?>js/modules/contact-form.js';
   initContactForm();
 </script>

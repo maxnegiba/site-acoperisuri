@@ -1,4 +1,3 @@
-
 <?php
 $page_title = "Dienstleistungen - Dachdecker Meisterbetrieb";
 $assets_path = 'assets/';
@@ -43,7 +42,7 @@ include(__DIR__ . '/includes/contact-float.php');
         <li>UV- und witterungsbeständig</li>
         <li>Extrem langlebig</li>
       </ul>
-      <a href="#contact-form" class="btn btn--primary">Angebot anfordern</a>
+      <a href="contact.php" class="btn btn--primary">Angebot anfordern</a>
     </div>
     <figure>
       <video class="service-video video-thumb" controls preload="none">
@@ -102,7 +101,7 @@ include(__DIR__ . '/includes/contact-float.php');
      
       <small>inkl. Entsorgung & Montage</small>
     </div>
-    <a href="#contact-form" class="btn btn--primary">Individuelles Angebot</a>
+    <a href="contact.php" class="btn btn--primary">Individuelles Angebot</a>
   </div>
 
     <!-- IMAGINI – SWIPER -->
@@ -133,7 +132,7 @@ include(__DIR__ . '/includes/contact-float.php');
       <?php endfor; ?>
     </div>
 
-    <a href="#contact-form" class="btn btn--primary">Individuelles Angebot</a>
+    <a href="contact.php" class="btn btn--primary">Individuelles Angebot</a>
   </div>
 </section>
 
@@ -177,7 +176,7 @@ include(__DIR__ . '/includes/contact-float.php');
       <?php endfor; ?>
     </div>
 
-    <button class="btn btn--primary" data-open="gutterModal">Defekt melden</button>
+    <a href="contact.php" class="btn btn--primary">Defekt melden</a>
   </div>
 </section>
 
@@ -221,7 +220,7 @@ include(__DIR__ . '/includes/contact-float.php');
       <?php endfor; ?>
     </div>
 
-    <a href="#contact-form" class="btn btn--primary">Kostenloser Termin</a>
+    <a href="contact.php" class="btn btn--primary">Kostenloser Termin</a>
   </div>
 </section>
 
@@ -278,7 +277,7 @@ include(__DIR__ . '/includes/contact-float.php');
       <?php endfor; ?>
     </div>
 
-    <button class="btn btn--primary" data-open="veluxModal">Modell wählen</button>
+    <a href="contact.php" class="btn btn--primary">Modell wählen</a>
   </div>
 </section>
 
@@ -322,7 +321,7 @@ include(__DIR__ . '/includes/contact-float.php');
       <?php endfor; ?>
     </div>
 
-    <a href="#contact-form" class="btn btn--primary">Beratung anfragen</a>
+    <a href="contact.php" class="btn btn--primary">Beratung anfragen</a>
   </div>
 </section>
 
@@ -402,7 +401,7 @@ include(__DIR__ . '/includes/contact-float.php');
       <?php endfor; ?>
     </div>
 
-    <a href="#contact-form" class="btn btn--primary">Kostenlose Beratung</a>
+    <a href="contact.php" class="btn btn--primary">Kostenlose Beratung</a>
   </div>
 </section>
 
@@ -499,7 +498,7 @@ include(__DIR__ . '/includes/contact-float.php');
           <p>
             <strong>Gerne beraten wir Sie fachkundig zu Ihren Möglichkeiten der Asbestdachsanierung.</strong> Asbest ist nur dann besonders gefährlich, wenn mit Altlasten nicht ordnungsgemäß umgegangen wird.
           </p>
-          <a href="#contact-form" class="btn btn--primary">Kostenlose Asbestberatung</a>
+          <a href="contact.php" class="btn btn--primary">Kostenlose Asbestberatung</a>
         </div>
       </div>
     </div>
@@ -509,11 +508,11 @@ include(__DIR__ . '/includes/contact-float.php');
 <?php include(__DIR__ . '/includes/footer.php'); ?>
 
 <!-- ===== LIGHTBOX CSS/JS ===== -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css  ">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js  "></script>
 
 <!-- ===== SWIPER JS ===== -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js  "></script>
 <script>
 // Inițializare Swiper pentru toate galeriile de imagini
 document.querySelectorAll('.swiper').forEach(el => {

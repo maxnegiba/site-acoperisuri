@@ -1,12 +1,8 @@
 <?php
-/*  /var/www/site-acoperisuri/mail.php
- *  Endpoint folosit de formularul de contact
- *  Trimite un e-mail de la Info.michael@gmbh.de către info.michaell.gmbh@gmail.com
- */
-
+/* /var/www/site-acoperisuri/mail.php */
 header('Content-Type: application/json');
 
-// 1. Datele primite din formular
+// 1. Datele primite
 $name    = trim($_POST['name']    ?? '');
 $phone   = trim($_POST['phone']   ?? '');
 $email   = trim($_POST['email']   ?? '');
@@ -16,18 +12,27 @@ $date    = $_POST['date']         ?? '';
 $msg     = trim($_POST['message'] ?? '');
 $website = $_POST['website']      ?? '';
 
-// 2. Anti-spam (honeypot)
+// 2. Honeypot
 if ($website !== '') {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Spam detected']);
     exit;
 }
 
-// 3. reCAPTCHA v3 (înlocuiește YOUR_SECRET_KEY)
+// 3. reCAPTCHA v3
 $recaptcha = $_POST['recaptcha_response'] ?? '';
-$secret     = '6Lfd6IwrAAAAAIEybbgYHpw9xrqIo1AY9CPybfwq';
-$verifyUrl  = 'https://www.google.com/recaptcha/api/siteverify';
-$response   = json_decode(file_get_contents($verifyUrl . '?secret=' . $secret . '&response=' . $recaptcha));
+$secret    = '6Lfd6IwrAAAAAIEybbgYHpw9xrqIo1AY9CPybfwq'; // ← cheia SECRETĂ
+$verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
+
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL            => $verifyUrl,
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => http_build_query(['secret' => $secret, 'response' => $recaptcha]),
+    CURLOPT_RETURNTRANSFER => true,
+]);
+$response = json_decode(curl_exec($ch) ?: '');
+curl_close($ch);
 
 if (!$response || !$response->success || ($response->score ?? 0) < 0.5) {
     http_response_code(400);
@@ -35,7 +40,7 @@ if (!$response || !$response->success || ($response->score ?? 0) < 0.5) {
     exit;
 }
 
-// 4. Validare minimă
+// 4. Validare
 if ($name === '' || $addr === '' || $service === '') {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Pflichtfelder fehlen']);
@@ -47,29 +52,17 @@ if ($phone === '' && $email === '') {
     exit;
 }
 
-// 5. Compunerea mesajului
+// 5. Compunerea e-mailului
 $subject = "Neue Kontaktanfrage";
-$body    =
-    "Name: $name\n" .
-    "Adresse: $addr\n" .
-    "Telefon: $phone\n" .
-    "E-Mail: $email\n" .
-    "Dienstleistung: $service\n" .
-    "Wunschtermin: $date\n\n" .
-    "Nachricht:\n$msg";
+$body    = "Name: $name\nAdresse: $addr\nTelefon: $phone\nE-Mail: $email\nDienstleistung: $service\nWunschtermin: $date\n\nNachricht:\n$msg";
 
 $headers =
     "From: Info.michael@gmbh.de\r\n" .
     "Reply-To: $email\r\n" .
     "Content-Type: text/plain; charset=utf-8\r\n";
 
-// 6. Trimiterea efectivă
+// 6. Trimitere
 $sent = mail('info.michaell.gmbh@gmail.com', $subject, $body, $headers);
 
-if ($sent) {
-    echo json_encode(['success' => true]);
-} else {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Mail server error']);
-}
+echo json_encode(['success' => (bool)$sent]);
 ?>
