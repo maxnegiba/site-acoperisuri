@@ -7,6 +7,12 @@ include(__DIR__ . '/includes/header.php');
 // include(__DIR__ . '/includes/contact-float.php'); // Dacă este folosit, poate fi inclus mai jos
 ?>
 
+<!-- CSS Critic pentru Homepage -->
+<style>
+/* Conținutul CSS-ului critic generat de tine */
+@import url('base/variables.css');@import url('base/reset.css');@import url('base/typography.css');@import url('base/animations.css');@import url('base/variables.css');@import url('base/animations.css');@import url('components/header.css');@import url('components/carousel.css');@import url('components/footer.css');@import url('components/buttons.css');@import url('utilities/responsive.css');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;color:#333;background:#f8f9fa;overflow-x:hidden}.hero-section{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding-top:var(--header-height);box-sizing:border-box;background:#000}.hero-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:var(--z-hero-video)}.hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:var(--z-hero-overlay)}.hero-content{position:relative;z-index:var(--z-hero-content);text-align:center;max-width:1200px;width:90%;padding:2rem;color:white}.hero-content h1{font-size:clamp(2.5rem,5vw,4rem);margin-bottom:1rem;animation:fadeInUp 1s ease-out;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,0.3)}.hero-content h2{font-size:clamp(1.5rem,3vw,2.5rem);font-weight:400;margin-bottom:1.5rem;animation:fadeInUp 1s ease-out 0.2s forwards;opacity:0;line-height:1.3}.hero-content p{font-size:clamp(1.1rem,2vw,1.25rem);max-width:800px;margin:0 auto 2rem;animation:fadeInUp 1s ease-out 0.4s forwards;opacity:0;text-shadow:0 1px 3px rgba(0,0,0,0.5)}.cta-button{display:inline-block;background:linear-gradient(135deg,var(--primary-color) 0%,var(--primary-dark) 100%);color:white;padding:1rem 2.5rem;border-radius:50px;font-weight:600;font-size:1.1rem;text-decoration:none;box-shadow:var(--shadow-primary);animation:fadeInUp 1s ease-out 0.6s forwards;opacity:0;border:none}.trust-badges{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:2rem;animation:fadeInUp 1s ease-out 0.8s forwards;opacity:0}.trust-badges span{display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);padding:0.5rem 1rem;border-radius:30px;border:1px solid rgba(255,255,255,0.2)}.scroll-indicator{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:var(--z-hero-content);animation:scroll 2s infinite;width:30px;height:50px;border-radius:15px;border:2px solid white;display:flex;justify-content:center;padding-top:10px}.scroll-indicator span{display:block;width:8px;height:8px;background:white;border-radius:50%;animation:scrollBounce 2s infinite}@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}@keyframes scroll{0%{opacity:0.5;transform:translateY(0) translateX(-50%)}50%{opacity:1;transform:translateY(-10px) translateX(-50%)}100%{opacity:0.5;transform:translateY(0) translateX(-50%)}}@keyframes scrollBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}@media (max-width:768px){.hero-section{min-height:90vh}.hero-content{padding:1rem}.hero-content h1{font-size:2.2rem}.hero-content h2{font-size:1.4rem}.trust-badges{gap:0.8rem}.trust-badges span{font-size:0.8rem;padding:0.4rem 0.8rem}}@media (max-width:480px){.hero-section{min-height:85vh}.hero-content h1{font-size:1.8rem}.hero-content h2{font-size:1.2rem}.hero-content p{font-size:1rem}.trust-badges{flex-direction:column;gap:0.5rem}.cta-button{padding:0.8rem 2rem;font-size:1rem}.scroll-indicator{bottom:1rem}}@media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;animation-iteration-count:1!important}}
+</style>
+
 <!-- HERO SECTION -->
 <section class="hero-section">
     <video class="hero-video"
@@ -26,10 +32,10 @@ include(__DIR__ . '/includes/header.php');
         <h1>Herzlich Willkommen bei Der Hausmeister Michael GmbH</h1>
         <h2>Wir schützen Ihr Eigentum im Neubau und Bestand durch das traditionelle Dachdeckerhandwerk.</h2>
         <p>
-            Sind wir Ihr richtiger Ansprechpartner?<br> <!-- Corectat punctuația -->
+            Sind wir Ihr richtiger Ansprechpartner?<br>
             Unser Ziel ist es, Ihre Wünsche umzusetzen!<br>
             Im Laufe der Zeit muss ein Dach Regen, Sturm, Schnee und Hitze standhalten. Eine optimale Dachkonstruktion bietet dabei den notwendigen Schutz. Überlassen Sie die Qualität der Bedachung nicht dem Zufall, sondern kompetenten Fachkräften.<br>
-            Wir von der Dachdeckerei Michael sind sowohl für Privatkunden als auch für Unternehmen, Architekten und öffentliche Auftraggeber (Bund, Länder und Gemeinden) ein kompetenter Ansprechpartner für Bedachungen aller Art. Und mit Erfolg sind wir für zahlreiche Kunden im Raum <strong>Berlin, Brandenburg, Potsdam und Frankfurt (Oder)</strong> tätig.<br> <!-- Integrează locațiile și cuvintele cheie -->
+            Wir von der Dachdeckerei Michael sind sowohl für Privatkunden als auch für Unternehmen, Architekten und öffentliche Auftraggeber (Bund, Länder und Gemeinden) ein kompetenter Ansprechpartner für Bedachungen aller Art. Und mit Erfolg sind wir für zahlreiche Kunden im Raum <strong>Berlin, Brandenburg, Potsdam und Frankfurt (Oder)</strong> tätig.<br>
             <strong>Dachdecker in Berlin & Brandenburg</strong> - von der kleinsten Dachreparatur bis zur kompletten Dacheindeckung.
             <br><strong>Über 20 Jahre Erfahrung.</strong>
             <br>Bund, Länder, Gemeinden & Privatkunden vertrauen uns.
@@ -38,7 +44,7 @@ include(__DIR__ . '/includes/header.php');
         <!-- Trust Badges -->
         <div class="trust-badges">
             <span>🏆 20+ Jahre Meisterbetrieb</span>
-            <span>📍 Berlin · Potsdam · Frankfurt (Oder)</span> <!-- Acestea sunt deja bune pentru local SEO -->
+            <span>📍 Berlin · Potsdam · Frankfurt (Oder)</span>
             <span>✅ Zertifiziert für öffentliche Aufträge</span>
         </div>
     </div>
@@ -112,18 +118,18 @@ include(__DIR__ . '/includes/header.php');
           <div class="slide-content">
             <div class="content-wrapper">
               <span class="project-tag">
-                <i class="icon-roof"></i> Dachsanierung <!-- Cuvânt cheie -->
+                <i class="icon-roof"></i> Dachsanierung
               </span>
               <h2 class="project-title">Moderne Dachsanierung mit Trapez-Blech</h2>
               <p class="project-desc">
-                <span class="location">Berlin Mitte</span> <!-- Locație pentru SEO local -->
+                <span class="location">Berlin Mitte</span>
                 <span class="year">2024</span>
               </p>
               <div class="project-stats">
                 <div class="stat"><span class="stat-number">170</span><span class="stat-label">m²</span></div>
                 <div class="stat"><span class="stat-number">4</span><span class="stat-label">Tage</span></div>
               </div>
-              <a href="contact.php" class="btn-explore"> <!-- Schimbat în contact.php pentru CTA -->
+              <a href="contact.php" class="btn-explore">
                 <span>Jetzt Kostenvoranschlag anfragen</span>
                 <i class="icon-arrow-right"></i>
               </a>
@@ -146,18 +152,18 @@ include(__DIR__ . '/includes/header.php');
           <div class="slide-content">
             <div class="content-wrapper">
               <span class="project-tag">
-                <i class="icon-roof"></i> Dachausbau <!-- Cuvânt cheie -->
+                <i class="icon-roof"></i> Dachausbau
               </span>
               <h2 class="project-title">Altbau-Dachausbau</h2>
               <p class="project-desc">
-                <span class="location">Berlin Charlottenburg</span> <!-- Locație pentru SEO local -->
+                <span class="location">Berlin Charlottenburg</span>
                 <span class="year">2023</span>
               </p>
               <div class="project-stats">
                 <div class="stat"><span class="stat-number">210</span><span class="stat-label">m²</span></div>
                 <div class="stat"><span class="stat-number">11</span><span class="stat-label">Tage</span></div>
               </div>
-              <a href="contact.php" class="btn-explore"> <!-- Schimbat în contact.php pentru CTA -->
+              <a href="contact.php" class="btn-explore">
                 <span>Jetzt Kostenvoranschlag anfragen</span>
                 <i class="icon-arrow-right"></i>
               </a>
@@ -180,18 +186,18 @@ include(__DIR__ . '/includes/header.php');
           <div class="slide-content">
             <div class="content-wrapper">
               <span class="project-tag">
-                <i class="icon-solar-panel"></i> Hochdruckreinigung & Nano-Versiegelung <!-- Cuvinte cheie -->
+                <i class="icon-solar-panel"></i> Hochdruckreinigung & Nano-Versiegelung
               </span>
               <h2 class="project-title">Hochdruckreiniger</h2>
               <p class="project-desc">
-                <span class="location">Potsdam</span> <!-- Locație pentru SEO local -->
+                <span class="location">Potsdam</span>
                 <span class="year">2024</span>
               </p>
               <div class="project-stats">
                 <div class="stat"><span class="stat-number">140</span><span class="stat-label">m²</span></div>
                 <div class="stat"><span class="stat-number">3</span><span class="stat-label">Tage</span></div>
               </div>
-              <a href="contact.php" class="btn-explore"> <!-- Schimbat în contact.php pentru CTA -->
+              <a href="contact.php" class="btn-explore">
                 <span>Jetzt Kostenvoranschlag anfragen</span>
                 <i class="icon-arrow-right"></i>
               </a>
@@ -214,18 +220,18 @@ include(__DIR__ . '/includes/header.php');
           <div class="slide-content">
             <div class="content-wrapper">
               <span class="project-tag">
-                <i class="icon-home"></i> Neubau <!-- Cuvânt cheie -->
+                <i class="icon-home"></i> Neubau
               </span>
               <h2 class="project-title">Einfamilienhaus Neubau</h2>
               <p class="project-desc">
-                <span class="location">Potsdam</span> <!-- Locație pentru SEO local -->
+                <span class="location">Potsdam</span>
                 <span class="year">2024</span>
               </p>
               <div class="project-stats">
                 <div class="stat"><span class="stat-number">280</span><span class="stat-label">m²</span></div>
                 <div class="stat"><span class="stat-number">2</span><span class="stat-label">W</span></div>
               </div>
-              <a href="contact.php" class="btn-explore"> <!-- Schimbat în contact.php pentru CTA -->
+              <a href="contact.php" class="btn-explore">
                 <span>Jetzt Kostenvoranschlag anfragen</span>
                 <i class="icon-arrow-right"></i>
               </a>
@@ -271,7 +277,7 @@ include(__DIR__ . '/includes/header.php');
                 Von der Planung bis zur Fertigstellung arbeiten wir transparent, zuverlässig und termingerecht.
             </p>
             <p>
-                Unser Team aus erfahrenen <strong>Dachdeckern</strong>, <strong>Klempnern</strong> und <strong>Zimmerleuten</strong> sorgt dafür, <!-- Integrează cuvintele cheie -->
+                Unser Team aus erfahrenen <strong>Dachdeckern</strong>, <strong>Klempnern</strong> und <strong>Zimmerleuten</strong> sorgt dafür,
                 dass jedes Projekt mit höchster Präzision und Liebe zum Detail umgesetzt wird.
             </p>
             <a href="about.php" class="btn-secondary">Lerne unser Team kennen</a>

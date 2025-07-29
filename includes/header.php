@@ -4,13 +4,14 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https:
 $host = $_SERVER['HTTP_HOST'];
 $base_url = $protocol . $host . '/';
 $assets_path = $base_url . 'assets/';
-// Determină pagina curentă pentru meniul activ
+
+// Determină pagina curentă pentru meniul activ și logica CSS
 $current_page = basename($_SERVER['PHP_SELF']);
 $request_uri = $_SERVER['REQUEST_URI'];
-$is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '');
+$is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
 
 // Asigură că $page_title și $page_description sunt definite pentru fiecare pagină
-// Pagina index.php o va seta explicit
+// Paginile individuale le vor seta explicit
 if (!isset($page_title)) {
     $page_title = 'MeisterDach - Dachdecker Meisterbetrieb';
 }
@@ -28,49 +29,96 @@ if (!isset($page_description)) {
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
 
-    <!-- Preload critical resources -->
-    <link rel="preload" href="<?= $assets_path ?>css/base/variables.css" as="style">
-    <link rel="preload" href="<?= $assets_path ?>css/base/reset.css" as="style">
-    <link rel="preload" href="<?= $assets_path ?>img/logo-main.png" as="image">
-    <link rel="preload" href="<?= $assets_path ?>img/logo-text.png" as="image">
-    <!-- Critical CSS -->
-    <link rel="stylesheet" href="<?= $assets_path ?>css/base/variables.css">
-    <link rel="stylesheet" href="<?= $assets_path ?>css/base/reset.css">
-    <link rel="stylesheet" href="<?= $assets_path ?>css/base/typography.css">
-    <link rel="stylesheet" href="<?= $assets_path ?>css/base/animations.css">
-    <!-- Component CSS -->
-    <link rel="stylesheet" href="<?= $assets_path ?>css/components/header.css">
-    <link rel="stylesheet" href="<?= $assets_path ?>css/components/buttons.css">
-    <!-- Page specific CSS -->
+    <!-- Preload resurse critice pentru afișarea inițială -->
+    <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
+    <!-- Dacă ai un font custom critic, preconectează și preîncarcă-l -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
+    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
+    <!-- <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
+    <!-- <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript> -->
+
+    <!-- CSS Critic Inline (va fi adăugat în index.php) -->
+    <!-- Pentru alte pagini, poți include inline doar partea critică specifică acelei pagini -->
+
+    <!-- Încărcare asincronă a CSS-ului non-critic sau specific paginii -->
+    <!-- CSS-ul de bază care nu este critic (sau deja inline) -->
+    <link rel="preload" href="<?= $assets_path ?>css/base/variables.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/variables.css"></noscript>
+
+    <link rel="preload" href="<?= $assets_path ?>css/base/reset.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/reset.css"></noscript>
+
+    <!-- Dacă typography.css NU este critic, îl încarcă asincron -->
+    <link rel="preload" href="<?= $assets_path ?>css/base/typography.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/typography.css"></noscript>
+
+    <!-- Dacă animations.css NU este critic, îl încarcă asincron -->
+    <link rel="preload" href="<?= $assets_path ?>css/base/animations.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/animations.css"></noscript>
+
+    <!-- Component CSS - încărcare asincronă -->
+    <link rel="preload" href="<?= $assets_path ?>css/components/header.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/header.css"></noscript>
+
+    <link rel="preload" href="<?= $assets_path ?>css/components/buttons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/buttons.css"></noscript>
+
+    <!-- Carousel CSS - doar pe homepage, încărcare asincronă -->
     <?php if ($is_home): ?>
-        <link rel="stylesheet" href="<?= $assets_path ?>css/main.css">
+        <link rel="preload" href="<?= $assets_path ?>css/components/carousel.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/carousel.css"></noscript>
     <?php endif; ?>
-    <?php if ($current_page === 'contact.php'): ?>
-        <link rel="stylesheet" href="<?= $assets_path ?>css/contact.css">
+
+    <!-- Page specific CSS - încărcare asincronă -->
+    <?php if ($is_home): ?>
+        <!-- Pentru homepage, main.css este încărcat asincron dacă CSS-ul critic este inline -->
+        <link rel="preload" href="<?= $assets_path ?>css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/main.css"></noscript>
+    <?php else: ?>
+        <!-- Pentru alte pagini, încarcă CSS-ul specific -->
+        <?php if ($current_page === 'contact.php'): ?>
+            <link rel="preload" href="<?= $assets_path ?>css/contact.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/contact.css"></noscript>
+        <?php endif; ?>
+        <?php if ($current_page === 'services.php'): ?>
+            <link rel="preload" href="<?= $assets_path ?>css/services.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/services.css"></noscript>
+        <?php endif; ?>
+        <?php if ($current_page === 'projects.php'): ?>
+            <link rel="preload" href="<?= $assets_path ?>css/projects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/projects.css"></noscript>
+        <?php endif; ?>
+        <?php if ($current_page === 'about.php'): ?>
+            <link rel="preload" href="<?= $assets_path ?>css/about.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/about.css"></noscript>
+        <?php endif; ?>
     <?php endif; ?>
-    <?php if ($current_page === 'services.php'): ?>
-        <link rel="stylesheet" href="<?= $assets_path ?>css/services.css">
-    <?php endif; ?>
-    <?php if ($current_page === 'projects.php'): ?>
-        <link rel="stylesheet" href="<?= $assets_path ?>css/projects.css">
-    <?php endif; ?>
-    <?php if ($current_page === 'about.php'): ?>
-        <link rel="stylesheet" href="<?= $assets_path ?>css/about.css">
-    <?php endif; ?>
-    <!-- External libraries -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <!-- In header.php -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
-<script src="<?= $assets_path ?>js/main.js" defer></script>
+
+    <!-- External libraries - încărcare asincronă -->
+    <!-- Font Awesome CSS -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+    <!-- Lightbox CSS -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css"></noscript>
+
+    <!-- Swiper CSS -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+
+    <!-- JavaScript - încărcare deferred pentru a nu bloca parsarea HTML-ului -->
+    <script src="<?= $assets_path ?>js/main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" defer crossorigin></script>
+
     <!-- Critical JavaScript pentru header -->
     <script>
+    // Încărcăm scriptul principal imediat ce DOM-ul este disponibil
     document.addEventListener('DOMContentLoaded', function() {
         // Header scroll effect
         const header = document.querySelector('.header');
-        const heroSection = document.querySelector('.hero-section');
+        const heroSection = document.querySelector('.hero-section'); // For homepage
         if (header) {
             // Scroll effect
             let scrollTimeout;
@@ -84,7 +132,7 @@ if (!isset($page_description)) {
                     }
                 }, 10);
             });
-            // Update hero padding
+            // Update hero padding (only on homepage where heroSection exists)
             if (heroSection) {
                 const updateHeroPadding = () => {
                     const headerHeight = header.offsetHeight;
@@ -94,6 +142,7 @@ if (!isset($page_description)) {
                 window.addEventListener('resize', updateHeroPadding);
             }
         }
+
         // Mobile menu
         const hamburger = document.querySelector('.hamburger');
         const mobileNav = document.querySelector('.nav-mobile');
@@ -120,9 +169,10 @@ if (!isset($page_description)) {
                     document.body.style.overflow = '';
                 }
             });
+
             // Close mobile menu when clicking outside
             document.addEventListener('click', function(e) {
-                if (mobileNav.classList.contains('active') &&
+                if (mobileNav && mobileNav.classList.contains('active') &&
                     !e.target.closest('.mobile-nav') &&
                     !e.target.closest('.nav-mobile')) {
                     hamburger.classList.remove('active');
@@ -130,31 +180,40 @@ if (!isset($page_description)) {
                     if (mobileOverlay) {
                         mobileOverlay.classList.remove('active');
                     }
-                    const spans = hamburger.querySelectorAll('span');
-                    spans[0].style.transform = 'none';
-                    spans[1].style.opacity = '1';
-                    spans[2].style.transform = 'none';
+                    const spans = hamburger ? hamburger.querySelectorAll('span') : [];
+                    if (spans.length >= 3) {
+                        spans[0].style.transform = 'none';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'none';
+                    }
                     document.body.style.overflow = '';
                 }
             });
+
             // Close mobile menu when clicking on links
-            const mobileLinks = mobileNav.querySelectorAll('a');
+            const mobileLinks = mobileNav ? mobileNav.querySelectorAll('a') : [];
             mobileLinks.forEach(link => {
                 link.addEventListener('click', function() {
-                    hamburger.classList.remove('active');
-                    mobileNav.classList.remove('active');
+                    // Ensure elements exist before trying to manipulate them
+                    if (hamburger && mobileNav) {
+                         hamburger.classList.remove('active');
+                         mobileNav.classList.remove('active');
+                    }
                     if (mobileOverlay) {
                         mobileOverlay.classList.remove('active');
                     }
-                    const spans = hamburger.querySelectorAll('span');
-                    spans[0].style.transform = 'none';
-                    spans[1].style.opacity = '1';
-                    spans[2].style.transform = 'none';
+                    const spans = hamburger ? hamburger.querySelectorAll('span') : [];
+                    if (spans.length >= 3) {
+                        spans[0].style.transform = 'none';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'none';
+                    }
                     document.body.style.overflow = '';
                 });
             });
         }
-        // Video autoplay handling
+
+        // Video autoplay handling (homepage)
         const video = document.querySelector('.hero-video');
         if (video) {
             video.addEventListener('loadedmetadata', function() {
@@ -163,8 +222,9 @@ if (!isset($page_description)) {
             const playPromise = video.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log('Autoplay prevented:', error);
-                    video.style.display = 'none';
+                    console.log('Autoplay prevented or failed:', error);
+                    // Optional: Hide video or show fallback image if autoplay fails
+                    // video.style.display = 'none';
                 });
             }
         }
@@ -174,9 +234,9 @@ if (!isset($page_description)) {
 <body>
     <header class="header">
         <div class="container">
-            <!-- Logo compus din două imagini -->
+            <!-- Logo compus dintr-o imagine -->
             <a href="<?= $base_url ?>" class="logo">
-                <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50"> <!-- Adăugat ALT și dimensiuni -->
+                <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50">
             </a>
             <!-- Meniu Desktop -->
             <nav class="nav-desktop" aria-label="Hauptnavigation">
@@ -185,25 +245,24 @@ if (!isset($page_description)) {
                     <li><a href="<?= $base_url ?>about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
                     <li><a href="<?= $base_url ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
                     <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
-                    <li><a href="<?= $base_url ?>contact.php" class="cta-button">Kontakt</a></li>
+                    <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?> cta-button">Kontakt</a></li>
                 </ul>
             </nav>
             <!-- Meniu Mobil -->
-         <button class="hamburger mobile-nav" aria-label="Deschide meniul" aria-controls="nav-mobile" aria-expanded="false">
-              <span></span>
-             <span></span>
-             <span></span>
-          </button>
-                <nav class="nav-mobile" id="nav-mobile">
-                    <ul>
-                        <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
-                        <li><a href="<?= $base_url ?>about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
-                        <li><a href="<?= $base_url ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
-                        <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
-                        <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?>">Kontakt</a></li>
-                    </ul>
-                </nav>
-            </div>
+            <button class="hamburger mobile-nav" aria-label="Deschide meniul" aria-controls="nav-mobile" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav-mobile" id="nav-mobile">
+                <ul>
+                    <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
+                    <li><a href="<?= $base_url ?>about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
+                    <li><a href="<?= $base_url ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
+                    <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
+                    <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?>">Kontakt</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
     <!-- Mobile overlay -->

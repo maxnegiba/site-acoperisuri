@@ -3,7 +3,7 @@ $page_title = "Dienstleistungen | Dachdecker Berlin Brandenburg | Der Hausmeiste
 $page_description = "Alle Dachdecker-, Klempner- und Zimmermannsleistungen in Berlin & Brandenburg. Kostenlose Beratung & individuelles Angebot!";
 $assets_path = 'assets/';
 include(__DIR__ . '/includes/header.php');
-include(__DIR__ . '/includes/contact-float.php');
+include(__DIR__ . '/includes/floating-buttons.php');
 ?>
 
 <!-- ===== HERO ===== -->
