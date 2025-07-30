@@ -186,6 +186,9 @@ if (!isset($page_description)) {
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/header.css"></noscript>
     <link rel="preload" href="<?= $assets_path ?>css/components/buttons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/buttons.css"></noscript>
+    <link rel="preload" href="<?= $assets_path ?>css/components/footer.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/footer.css"></noscript>
+    <!-- Sfârșit adăugare pentru footer -->
     <!-- Carousel CSS - doar pe homepage, încărcare asincronă -->
     <?php if ($is_home): ?>
         <link rel="preload" href="<?= $assets_path ?>css/components/carousel.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
