@@ -123,6 +123,8 @@ html {
 }
 
 body {
+      font-display: swap;
+
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
@@ -648,6 +650,7 @@ button {
   transition: transform 0.3s ease;
   gap: 8px;
   margin-right: auto;
+  /* width, height aici ar trebui sa fie pentru container, nu pentru img */
 }
 
 .logo-main {

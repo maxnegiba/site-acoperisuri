@@ -48,7 +48,7 @@ if (!isset($page_description)) {
     <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.min.css"></noscript>
     <!-- === Sfarsit CSS Concatenat si Minificat === -->
-
+    <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">  
     <!-- External libraries - încărcare asincronă -->
     <!-- Font Awesome CSS -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -238,7 +238,10 @@ if (!isset($page_description)) {
         <div class="container">
             <!-- Logo compus dintr-o imagine -->
             <a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>" class="logo">
-                <img src="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50" loading="eager"> <!-- Logo critical, load eagerly -->
+                <<img src="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/logo-text.jpg" 
+     alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
+     class="logo-text" width="200" height="50" loading="eager"
+     style="background-color: rgba(255,255,255,0.1);">
             </a>
 
             <!-- Meniu Desktop -->
