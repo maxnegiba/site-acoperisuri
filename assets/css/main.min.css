@@ -658,6 +658,21 @@ button {
 }
 
 .logo-text {
+  /* Seteaza width si height EXPLICITE in CSS */
+  width: 200px;
+  height: 50px;
+
+  /* Asigura-te ca imaginea se incadreaza in dimensiunile setate */
+  /* object-fit: contain pastreaza proportiile imaginii */
+  object-fit: contain;
+
+  /* Asigura-te ca nu este suprascris de alte proprietati */
+  /* max-width: none; poate fi necesar daca ai max-width: 100%; global pe img */
+  max-width: none; /* sau asigura-te ca nu se aplica max-width: 100% aici */
+  /* height: auto; dintr-un stil global pe img ar putea anula height: 50px */
+  height: 50px; /* Repeta height-ul aici daca e necesar */
+
+  /* Adauga stilurile existente */
   height: 100%;
   width: auto;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
