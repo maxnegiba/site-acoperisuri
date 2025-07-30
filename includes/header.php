@@ -44,7 +44,7 @@ if (!isset($page_description)) {
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
     <!-- === CSS Concatenat si Minificat - Incarcare Asincrona === -->
-    <!-- main.min.css contine: base/*, components/*, utilities/* -->
+    <!-- === CSS Concatenat si Minificat - Incarcare Asincrona (pentru TOATE paginile) === -->
     <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.min.css"></noscript>
     <!-- === Sfarsit CSS Concatenat si Minificat === -->
