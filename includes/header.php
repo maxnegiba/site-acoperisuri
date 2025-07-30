@@ -200,6 +200,11 @@ if (!isset($page_description)) {
     <!-- /CSS Critic Inline pentru Header -->
 
     <!-- Page specific CSS - încărcare asincronă (doar pentru pagina curentă) -->
+     <?php if ($is_home): ?>
+        <!-- CSS specific paginii principale -->
+        <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.css"></noscript>
+    <?php else: ?>
     <?php if ($current_page === 'contact.php'): ?>
         <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/contact.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/contact.css"></noscript>
