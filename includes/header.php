@@ -1,32 +1,53 @@
+<?php
+// Presupunem ca aceste variabile sunt setate in fisierul principal (index.php)
+// $protocol, $host, $base_url, $assets_path
+// $current_page, $is_home
+// $page_title, $page_description
+
+// Daca nu sunt setate, le putem defini aici ca fallback (de obicei sunt in index.php)
+if (!isset($assets_path)) {
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    $host = $_SERVER['HTTP_HOST'];
+    $base_url = $protocol . $host . '/';
+    $assets_path = $base_url . 'assets/';
+}
+
+if (!isset($current_page)) {
+    $current_page = basename($_SERVER['PHP_SELF']);
+}
+if (!isset($is_home)) {
+    $request_uri = $_SERVER['REQUEST_URI'];
+    $is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
+}
+
+// Asigura ca $page_title si $page_description sunt definite pentru fiecare pagina
+// Paginile individuale le vor seta explicit
+if (!isset($page_title)) {
+    $page_title = 'MeisterDach - Dachdecker Meisterbetrieb';
+}
+if (!isset($page_description)) {
+    // Descriere generala implicita, dar ideal ar fi una specifica pentru fiecare pagina
+    $page_description = 'Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg. Über 20 Jahre Erfahrung. Kostenlose Beratung & Angebot!';
+}
+?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO Meta Tags -->
+    <!-- Titlu și Meta Description - Esențiale pentru SEO -->
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
-    <meta name="author" content="Der Hausmeister Michael GmbH">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="<?= $base_url ?>">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= $assets_path ?>img/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="<?= $assets_path ?>img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= $assets_path ?>img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= $assets_path ?>img/favicon-16x16.png">
-
-    <!-- Preconnect pentru CDN-uri importante (Ajută la performanță) -->
+    <!-- Preconnect pentru CDN-uri - Ajută la performanță -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
-    <!-- Dacă folosești Google Fonts, adaugă și preconnect pentru ele -->
 
-    <!-- === CSS Concatenat și Minificat - Încărcare Asincronă === -->
-    <!-- main.min.css conține: base/*, components/*, utilities/* -->
-    <link rel="preload" href="<?= $assets_path ?>css/main.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/main.min.css"></noscript>
-    <!-- === Sfârșit CSS Concatenat și Minificat === -->
+    <!-- === CSS Concatenat si Minificat - Incarcare Asincrona === -->
+    <!-- main.min.css contine: base/*, components/*, utilities/* -->
+    <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.min.css"></noscript>
+    <!-- === Sfarsit CSS Concatenat si Minificat === -->
 
     <!-- External libraries - încărcare asincronă -->
     <!-- Font Awesome CSS -->
@@ -37,356 +58,390 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css"></noscript>
 
-    <!-- Swiper CSS (doar pe homepage) -->
-    <?php if ($is_home): ?>
+    <!-- Swiper CSS -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
-    <?php endif; ?>
-    <!-- === Sfârșit Biblioteci Externe === -->
 
     <!-- === CSS Critic Inline pentru Header - Asigură afișarea corectă fără FOUC === -->
     <style>
-    /* === CRITICAL HEADER STYLES - INLINE === */
-    .header {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.95));
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-        border-bottom: 1px solid rgba(211, 47, 47, 0.1);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1010;
-        height: 100px;
-        padding: 0;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .header .container {
-        width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-        padding: 0 32px;
-        position: relative;
-    }
-    .logo {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        z-index: 1011;
-    }
-    .logo-text {
-        height: 40px;
-        width: auto;
-        transition: all 0.3s ease;
-    }
-    .nav-desktop {
-        display: none;
-    }
-    .nav-mobile {
-        display: none;
-    }
-    .hamburger {
-        display: none;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 30px;
-        height: 21px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        z-index: 1012;
-    }
-    .hamburger span {
-        width: 100%;
-        height: 3px;
-        background: #d32f2f;
-        border-radius: 2px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        transform-origin: center;
-    }
-    .hamburger.active span:nth-child(1) {
-        transform: translateY(9px) rotate(45deg);
-    }
-    .hamburger.active span:nth-child(2) {
-        opacity: 0;
-    }
-    .hamburger.active span:nth-child(3) {
-        transform: translateY(-9px) rotate(-45deg);
-    }
-    @media (min-width: 992px) {
-        .hamburger {
-            display: none;
+        /* === CRITICAL HEADER STYLES - INLINE === */
+        .header {
+            --header-height: 100px;
+            --header-height-scrolled: 70px;
+            --z-header: 1010;
+            --z-mobile-nav: 1008;
+            --z-hero-video: -1;
+            --z-overlay: 1005;
+            --primary-color: #d32f2f;
+            --primary-dark: #b71c1c;
+            --secondary-color: #1976d2;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --white: #ffffff;
+            --light-gray: #f1f3f4;
+            --border-color: rgba(211, 47, 47, 0.1);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.95));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: var(--z-header);
+            height: var(--header-height);
+            padding: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .nav-mobile {
-            display: none;
+
+        .header.scrolled {
+            height: var(--header-height-scrolled);
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
+
+        .header .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            padding: 0 32px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            z-index: 1011;
+        }
+
+        .logo-text {
+            height: 40px;
+            width: auto;
+            transition: height 0.3s ease;
+        }
+
+        .header.scrolled .logo-text {
+            height: 35px;
+        }
+
+        /* Desktop Navigation */
         .nav-desktop {
             display: flex;
+            align-items: center;
         }
+
         .nav-desktop ul {
             display: flex;
             list-style: none;
             margin: 0;
             padding: 0;
-            align-items: center;
-            gap: 2rem;
         }
+
+        .nav-desktop li {
+            margin: 0 10px;
+        }
+
         .nav-desktop a {
             text-decoration: none;
-            color: #333;
+            color: var(--text-color);
             font-weight: 600;
-            padding: 0.5rem 1rem;
+            font-size: 16px;
+            padding: 8px 12px;
             border-radius: 8px;
             transition: all 0.3s ease;
             position: relative;
         }
-        .nav-desktop a:hover, .nav-desktop a.active {
-            color: #d32f2f;
+
+        .nav-desktop a:hover,
+        .nav-desktop a:focus,
+        .nav-desktop a.active {
+            color: var(--primary-color);
         }
-        .nav-desktop a::before {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 70%;
-            height: 2px;
-            background: #d32f2f;
-            border-radius: 1px;
+
+        .nav-desktop a.active::after {
+             content: '';
+             position: absolute;
+             bottom: -5px;
+             left: 50%;
+             transform: translateX(-50%);
+             width: 60%;
+             height: 3px;
+             background-color: var(--primary-color);
+             border-radius: 2px;
+        }
+
+        .nav-desktop .cta-button {
+            background: var(--primary-color);
+            color: white !important;
+            padding: 10px 20px;
+            margin-left: 15px;
+            border-radius: 30px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-desktop .cta-button:hover,
+        .nav-desktop .cta-button:focus {
+            background: var(--primary-dark);
+            box-shadow: 0 6px 16px rgba(211, 47, 47, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Navigation */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1012;
             transition: transform 0.3s ease;
         }
-        .nav-desktop a:hover::before, .nav-desktop a.active::before {
-            transform: translateX(-50%) scaleX(1);
-        }
-        .cta-button {
-            background: linear-gradient(135deg, #d32f2f, #b71c1c);
-            color: white !important;
-            padding: 0.75rem 1.5rem !important;
-            border-radius: 50px;
-            font-weight: 700 !important;
-            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+
+        .hamburger span {
+            width: 100%;
+            height: 3px;
+            background: var(--text-color);
+            border-radius: 10px;
             transition: all 0.3s ease;
-            border: none;
+            transform-origin: center;
         }
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+
+        .hamburger.active {
+            transform: rotate(90deg);
         }
-        .cta-button::before {
-            display: none;
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
         }
-    }
-    @media (max-width: 991.98px) {
-        .nav-desktop, .header .cta-button {
-            display: none;
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
         }
-        .mobile-nav, .hamburger, .nav-mobile {
-            display: block;
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
         }
-        .hamburger {
-            position: relative;
-            display: flex;
-        }
+
         .nav-mobile {
+            display: none;
             position: fixed;
-            top: 100px;
+            top: var(--header-height);
             left: -100%;
             width: 85%;
             max-width: 300px;
-            height: calc(100vh - 100px);
-            background: white;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            height: calc(100vh - var(--header-height));
+            background: var(--white);
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+            z-index: var(--z-mobile-nav);
             transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1008;
-            padding: 2rem;
+            overflow-y: auto;
         }
+
         .nav-mobile.active {
             left: 0;
         }
+
         .nav-mobile ul {
-            display: flex;
-            flex-direction: column;
             list-style: none;
-            padding: 0;
+            padding: 30px 0;
             margin: 0;
-            gap: 1.5rem;
         }
+
+        .nav-mobile li {
+            margin-bottom: 5px;
+        }
+
         .nav-mobile a {
-            text-decoration: none;
-            color: #333;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 0.5rem 0;
             display: block;
-            transition: color 0.2s ease;
+            padding: 15px 30px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
-        .nav-mobile a:hover, .nav-mobile a.active {
-            color: #d32f2f;
+
+        .nav-mobile a:hover,
+        .nav-mobile a:focus,
+        .nav-mobile a.active {
+            background: var(--light-gray);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
         }
+
+        .nav-mobile .cta-button {
+            background: var(--primary-color);
+            color: white !important;
+            padding: 12px 25px;
+            margin: 20px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-mobile .cta-button:hover,
+        .nav-mobile .cta-button:focus {
+            background: var(--primary-dark);
+            box-shadow: 0 6px 16px rgba(211, 47, 47, 0.3);
+        }
+
         .mobile-overlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1007;
+            z-index: 1005;
             opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
+            transition: opacity 0.4s ease;
         }
+
         .mobile-overlay.active {
+            display: block;
             opacity: 1;
-            visibility: visible;
         }
-    }
-    @media (max-width: 768px) {
-        .header {
-            height: 80px;
+
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .nav-desktop,
+            .header .cta-button:not(.nav-mobile .cta-button) {
+                /* Ascunde pe mobil, cu exceptia CTA-ului din meniul mobil daca exista acolo */
+                display: none;
+            }
+
+            .mobile-nav,
+            .hamburger,
+            .nav-mobile {
+                /* Asigura afisarea pe mobil */
+                display: block;
+            }
+
+            /* Adaugă aici și stilurile critice minime pentru .hamburger și .nav-mobile dacă sunt esențiale pentru layout-ul inițial */
+            .hamburger {
+                position: relative;
+                /* ... restul stilurilor critice minime pentru hamburger ... */
+                display: flex;
+                /* Asigură afișarea corectă */
+            }
+
+            .nav-mobile {
+                /* Stiluri critice minime pentru poziționare inițială */
+                position: fixed;
+                top: var(--header-height);
+                left: -100%;
+                /* Ascuns inițial */
+                width: 85%;
+                max-width: 300px;
+                height: calc(100vh - var(--header-height));
+                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                /* Tranziția este critică */
+                z-index: var(--z-mobile-nav);
+            }
+
+            .nav-mobile.active {
+                left: 0;
+                /* Afișat când e activ */
+            }
         }
-        .nav-mobile {
-            top: 80px;
-            height: calc(100vh - 80px);
+
+        /* Adaugă și alte media queries critice dacă afectează layout-ul imediat (ex: schimbări de înălțime pe mobil) */
+        @media (max-width: 768px) {
+            .header {
+                --header-height: 80px;
+                height: var(--header-height);
+                padding: 0 20px;
+            }
+
+            .nav-mobile {
+                top: var(--header-height);
+                height: calc(100vh - var(--header-height));
+            }
+
+            .header.scrolled {
+                --header-height-scrolled: 70px;
+                height: var(--header-height-scrolled);
+            }
+
+            /* Adaugă aici stiluri critice pentru logo dacă se schimbă dimensiunea */
+            .logo-text {
+                height: 35px;
+            }
+
+            .header.scrolled .logo-text {
+                height: 30px;
+            }
         }
-        .header.scrolled {
-            height: 70px;
+
+        /* === PRINT - CRITICAL === */
+        @media print {
+            .header {
+                position: static;
+                box-shadow: none;
+                background: white;
+            }
+
+            .nav-desktop a,
+            .nav-mobile a {
+                color: black !important;
+            }
         }
-        .logo-text {
-            max-height: 35px;
-        }
-        .header.scrolled .logo-text {
-            max-height: 30px;
-        }
-    }
-    @media print {
-        .header {
-            position: static;
-            box-shadow: none;
-            background: white;
-        }
-        .nav-desktop a, .nav-mobile a {
-            color: black !important;
-        }
-    }
-    /* === PRINT - CRITICAL === */
     </style>
     <!-- /CSS Critic Inline pentru Header -->
 
-    <!-- JavaScript pentru funcționalități critice (poate fi pus și în footer pentru non-critical JS) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Header scroll effect
-            const header = document.querySelector('.header');
-            const heroSection = document.querySelector('.hero-section'); // For homepage
+    <!-- Page specific CSS - încărcare asincronă -->
+    <?php if ($current_page === 'contact.php'): ?>
+        <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/contact.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/contact.css"></noscript>
+    <?php endif; ?>
+    <?php if ($current_page === 'services.php'): ?>
+        <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/services.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/services.css"></noscript>
+    <?php endif; ?>
+    <!-- /Page specific CSS -->
 
-            if (header) {
-                // Scroll effect
-                let scrollTimeout;
-                window.addEventListener('scroll', function() {
-                    clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(function() {
-                        if (window.scrollY > 50) {
-                            header.classList.add('scrolled');
-                        } else {
-                            header.classList.remove('scrolled');
-                        }
-                    }, 10);
-                });
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/favicon-16x16.png">
 
-                // Update hero padding (only on homepage where heroSection exists)
-                if (heroSection) {
-                    const updateHeroPadding = () => {
-                        const headerHeight = header.offsetHeight;
-                        heroSection.style.paddingTop = headerHeight + 'px';
-                    };
-                    updateHeroPadding();
-                    window.addEventListener('resize', updateHeroPadding);
-                }
-            }
-
-            // Mobile menu
-            const hamburger = document.querySelector('.hamburger');
-            const mobileNav = document.querySelector('.nav-mobile');
-            const mobileOverlay = document.querySelector('.mobile-overlay');
-
-            if (hamburger && mobileNav) {
-                hamburger.addEventListener('click', function() {
-                    const isActive = hamburger.classList.contains('active');
-                    hamburger.classList.toggle('active');
-                    mobileNav.classList.toggle('active');
-                    if (mobileOverlay) {
-                        mobileOverlay.classList.toggle('active');
-                    }
-                    // Prevent body scroll when menu is open
-                    document.body.style.overflow = isActive ? '' : 'hidden';
-                });
-
-                // Close menu if overlay is clicked
-                if (mobileOverlay) {
-                    mobileOverlay.addEventListener('click', function() {
-                        hamburger.classList.remove('active');
-                        mobileNav.classList.remove('active');
-                        mobileOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    });
-                }
-
-                // Close menu if a link inside is clicked
-                const mobileLinks = mobileNav.querySelectorAll('a');
-                mobileLinks.forEach(link => {
-                    link.addEventListener('click', () => {
-                        hamburger.classList.remove('active');
-                        mobileNav.classList.remove('active');
-                        if (mobileOverlay) {
-                            mobileOverlay.classList.remove('active');
-                        }
-                        document.body.style.overflow = '';
-                    });
-                });
-            }
-
-            // Video autoplay handling (homepage)
-            <?php if ($is_home): ?>
-            const video = document.querySelector('.hero-video');
-            if (video) {
-                video.addEventListener('loadedmetadata', function() {
-                    video.setAttribute('data-loaded', 'true');
-                });
-                const playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log('Autoplay prevented or failed:', error);
-                        // Optional: Hide video or show fallback image if autoplay fails
-                        // video.style.display = 'none';
-                    });
-                }
-            }
-            <?php endif; ?>
-        });
-    </script>
 </head>
 <body>
     <header class="header">
         <div class="container">
             <!-- Logo compus dintr-o imagine -->
-            <a href="<?= $base_url ?>" class="logo">
-                <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50" loading="eager"> <!-- loading=eager pentru logo -->
+            <a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>" class="logo">
+                <img src="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50" loading="eager"> <!-- Logo critical, load eagerly -->
             </a>
 
             <!-- Meniu Desktop -->
             <nav class="nav-desktop" aria-label="Hauptnavigation">
                 <ul>
-                    <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
-                    <li><a href="<?= $base_url ?>about.php" class="<?= basename($_SERVER['PHP_SELF']) === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
-                    <li><a href="<?= $base_url ?>services.php" class="<?= basename($_SERVER['PHP_SELF']) === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
-                    <li><a href="<?= $base_url ?>projects.php" class="<?= basename($_SERVER['PHP_SELF']) === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
-                    <li><a href="<?= $base_url ?>contact.php" class="<?= basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'active' : '' ?> cta-button">Kontakt</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?> cta-button">Kontakt</a></li>
                 </ul>
             </nav>
 
@@ -396,14 +451,15 @@
                 <span></span>
                 <span></span>
             </button>
-
             <nav class="nav-mobile" id="nav-mobile">
                 <ul>
-                    <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
-                    <li><a href="<?= $base_url ?>about.php" class="<?= basename($_SERVER['PHP_SELF']) === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
-                    <li><a href="<?= $base_url ?>services.php" class="<?= basename($_SERVER['PHP_SELF']) === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
-                    <li><a href="<?= $base_url ?>projects.php" class="<?= basename($_SERVER['PHP_SELF']) === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
-                    <li><a href="<?= $base_url ?>contact.php" class="<?= basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'active' : '' ?>">Kontakt</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?>">Kontakt</a></li>
+                    <!-- CTA mobil duplicat pentru accesibilitate -->
+                    <li><a href="<?= htmlspecialchars($base_url, ENT_QUOTES, 'UTF-8') ?>contact.php" class="cta-button">Kontakt</a></li>
                 </ul>
             </nav>
         </div>
