@@ -41,6 +41,15 @@ if (!isset($page_description)) {
 
     <!-- Preconnect pentru CDN-uri - Ajută la performanță -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.rel='stylesheet'">
+<style>
+  @font-face {
+    font-family: 'Font Awesome';
+    font-display: swap;
+    src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2'),
+         url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
+  }
+</style>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
     <!-- === CSS Concatenat si Minificat - Incarcare Asincrona === -->
@@ -81,17 +90,18 @@ if (!isset($page_description)) {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .header .container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 100%;
-            padding: 0 32px;
-            position: relative;
-        }
+       .header .container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 32px;
+  position: relative;
+  contain: layout style paint; /* Prevent shifts */
+}
 
         /* === DESKTOP NAVIGATION - CRITICAL PARTS === */
         .nav-desktop {
