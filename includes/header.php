@@ -60,6 +60,7 @@ if (!isset($page_description)) {
     <!-- === Sfarsit CSS Concatenat si Minificat === -->
     <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">  
     <!-- External libraries - încărcare asincronă -->
+     <script src="<?php echo htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8'); ?>js/main.js" defer></script>
     <!-- Font Awesome CSS -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
@@ -216,6 +217,9 @@ if (!isset($page_description)) {
         <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/main.css"></noscript>
     <?php else: ?>
+
+    
+
         <!-- CSS specifice pentru alte pagini -->
         <?php if ($current_page === 'contact.php'): ?>
             <link rel="preload" href="<?= htmlspecialchars($assets_path, ENT_QUOTES, 'UTF-8') ?>css/contact.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
