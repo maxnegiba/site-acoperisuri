@@ -4,12 +4,10 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https:
 $host = $_SERVER['HTTP_HOST'];
 $base_url = $protocol . $host . '/';
 $assets_path = $base_url . 'assets/';
-
 // Determină pagina curentă pentru meniul activ și logica CSS
 $current_page = basename($_SERVER['PHP_SELF']);
 $request_uri = $_SERVER['REQUEST_URI'];
 $is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
-
 // Asigură că $page_title și $page_description sunt definite pentru fiecare pagină
 // Paginile individuale le vor seta explicit
 if (!isset($page_title)) {
@@ -28,7 +26,6 @@ if (!isset($page_description)) {
     <!-- Titlu și Meta Description - Esențiale pentru SEO -->
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
-
     <!-- Preload resurse critice pentru afișarea inițială -->
     <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
     <!-- Dacă ai un font custom critic, preconectează și preîncarcă-l -->
@@ -37,38 +34,163 @@ if (!isset($page_description)) {
     <!-- <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
     <!-- <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript> -->
 
-    <!-- CSS Critic Inline (va fi adăugat în index.php) -->
-    <!-- Pentru alte pagini, poți include inline doar partea critică specifică acelei pagini -->
+    <!-- CSS Critic Inline pentru Header - Asigură afișarea corectă fără FOUC -->
+    <style>
+        /* === CRITICAL HEADER STYLES - INLINE === */
+        .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.95));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(211, 47, 47, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1010;
+            height: 100px;
+            padding: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            padding: 0 32px;
+            position: relative;
+        }
+
+        /* === DESKTOP NAVIGATION - CRITICAL PARTS === */
+        .nav-desktop {
+            display: flex; /* Asigură afișarea corectă */
+            align-items: center;
+            gap: 8px;
+            margin-left: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 50px;
+            padding: 8px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 1005;
+        }
+
+        .nav-desktop ul {
+            display: flex; /* Asigură afișarea corectă */
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-desktop li {
+            position: relative;
+        }
+
+        .nav-desktop a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: block; /* Asigură afișarea corectă */
+        }
+
+        /* === MOBILE NAVIGATION - CRITICAL PARTS (hidden by default) === */
+        /* Acestea sunt esențiale pentru a ascunde corect meniul mobil pe desktop */
+        .mobile-nav,
+        .hamburger,
+        .nav-mobile { /* <= LINIA IMPORTANTĂ CARE LIPSEA */
+            display: none; /* Ascunde meniul mobil și hamburger pe desktop */
+        }
+
+        /* === MEDIA QUERY pentru mobil - CRITICAL === */
+        /* Repetă partea esențială pentru a afișa mobil și ascunde desktop pe ecrane mici */
+        @media (max-width: 991.98px) {
+            .nav-desktop,
+            .header .cta-button { /* Dacă .cta-button e doar în meniul mobil, ajustează */
+                display: none; /* Ascunde pe mobil */
+            }
+
+            .mobile-nav,
+            .hamburger,
+            .nav-mobile { /* Asigură afișarea pe mobil */
+                display: block; /* Afișează hamburger și meniu mobil */
+            }
+            /* Adaugă aici și stilurile critice minime pentru .hamburger și .nav-mobile dacă sunt esențiale pentru layout-ul inițial */
+            .hamburger {
+                position: relative;
+                /* ... restul stilurilor critice minime pentru hamburger ... */
+                display: flex; /* Asigură afișarea corectă */
+            }
+            .nav-mobile {
+                /* Stiluri critice minime pentru poziționare inițială */
+                position: fixed;
+                top: 100px;
+                left: -100%; /* Ascuns inițial */
+                width: 85%;
+                max-width: 300px;
+                height: calc(100vh - 100px);
+                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Tranziția este critică */
+                z-index: 1008;
+            }
+            .nav-mobile.active {
+                left: 0; /* Afișat când e activ */
+            }
+        }
+
+        /* Adaugă și alte media queries critice dacă afectează layout-ul imediat (ex: schimbări de înălțime pe mobil) */
+        @media (max-width: 768px) {
+            .header { height: 80px; }
+            .nav-mobile { top: 80px; height: calc(100vh - 80px); }
+            .header.scrolled { height: 70px; }
+            /* Adaugă aici stiluri critice pentru logo dacă se schimbă dimensiunea */
+            .logo-main, .logo-text { max-height: 40px; }
+            .header.scrolled .logo-main,
+            .header.scrolled .logo-text { max-height: 35px; }
+        }
+
+        /* === PRINT - CRITICAL === */
+        @media print {
+            .header { position: static; box-shadow: none; background: white; }
+            .nav-desktop a, .nav-mobile a { color: black !important; }
+        }
+    </style>
+    <!-- /CSS Critic Inline pentru Header -->
 
     <!-- Încărcare asincronă a CSS-ului non-critic sau specific paginii -->
     <!-- CSS-ul de bază care nu este critic (sau deja inline) -->
     <link rel="preload" href="<?= $assets_path ?>css/base/variables.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/variables.css"></noscript>
-
     <link rel="preload" href="<?= $assets_path ?>css/base/reset.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/reset.css"></noscript>
-
     <!-- Dacă typography.css NU este critic, îl încarcă asincron -->
     <link rel="preload" href="<?= $assets_path ?>css/base/typography.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/typography.css"></noscript>
-
     <!-- Dacă animations.css NU este critic, îl încarcă asincron -->
     <link rel="preload" href="<?= $assets_path ?>css/base/animations.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/base/animations.css"></noscript>
-
     <!-- Component CSS - încărcare asincronă -->
+    <!-- header.css este încărcat asincron, dar partea critică este deja inline -->
     <link rel="preload" href="<?= $assets_path ?>css/components/header.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/header.css"></noscript>
-
     <link rel="preload" href="<?= $assets_path ?>css/components/buttons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/buttons.css"></noscript>
-
     <!-- Carousel CSS - doar pe homepage, încărcare asincronă -->
     <?php if ($is_home): ?>
         <link rel="preload" href="<?= $assets_path ?>css/components/carousel.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/carousel.css"></noscript>
     <?php endif; ?>
-
     <!-- Page specific CSS - încărcare asincronă -->
     <?php if ($is_home): ?>
         <!-- Pentru homepage, main.css este încărcat asincron dacă CSS-ul critic este inline -->
@@ -93,25 +215,20 @@ if (!isset($page_description)) {
             <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/about.css"></noscript>
         <?php endif; ?>
     <?php endif; ?>
-
     <!-- External libraries - încărcare asincronă -->
     <!-- Font Awesome CSS -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-
     <!-- Lightbox CSS -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css"></noscript>
-
     <!-- Swiper CSS -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
-
     <!-- JavaScript - încărcare deferred pentru a nu bloca parsarea HTML-ului -->
     <script src="<?= $assets_path ?>js/main.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer crossorigin></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" defer crossorigin></script>
-
     <!-- Critical JavaScript pentru header -->
     <script>
     // Încărcăm scriptul principal imediat ce DOM-ul este disponibil
@@ -142,7 +259,6 @@ if (!isset($page_description)) {
                 window.addEventListener('resize', updateHeroPadding);
             }
         }
-
         // Mobile menu
         const hamburger = document.querySelector('.hamburger');
         const mobileNav = document.querySelector('.nav-mobile');
@@ -169,7 +285,6 @@ if (!isset($page_description)) {
                     document.body.style.overflow = '';
                 }
             });
-
             // Close mobile menu when clicking outside
             document.addEventListener('click', function(e) {
                 if (mobileNav && mobileNav.classList.contains('active') &&
@@ -189,7 +304,6 @@ if (!isset($page_description)) {
                     document.body.style.overflow = '';
                 }
             });
-
             // Close mobile menu when clicking on links
             const mobileLinks = mobileNav ? mobileNav.querySelectorAll('a') : [];
             mobileLinks.forEach(link => {
@@ -212,7 +326,6 @@ if (!isset($page_description)) {
                 });
             });
         }
-
         // Video autoplay handling (homepage)
         const video = document.querySelector('.hero-video');
         if (video) {
