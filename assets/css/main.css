@@ -486,11 +486,14 @@ body {
 
 .service-card h3 {
     font-size: clamp(1.3rem, 1.8vw, 1.6rem);
-    margin-bottom: 1.2rem;
+   
     color: #2B2B2B;
     transition: color 0.4s ease;
     font-weight: 700;
     line-height: 1.3;
+     min-height: 2.5em; /* Reserve 2 lines */
+  line-height: 1.3;
+  margin-bottom: 1.2rem;
 }
 
 .service-card p {
@@ -709,4 +712,20 @@ body {
 @media (max-width: 768px) {
     .about-content h2 { font-size: 1.8rem; }
     .about-content p  { font-size: 1rem; }
+}
+
+/* Optimize Swiper for forced reflow */
+.swiper-wrapper {
+  contain: layout style paint;
+}
+
+.swiper-slide {
+  contain: layout style paint;
+}
+
+/* Prevent forced reflow on animations */
+.service-card,
+.service-card * {
+  will-change: transform;
+  transform: translateZ(0);
 }
