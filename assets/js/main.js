@@ -158,88 +158,104 @@ class CinematicCarousel {
   initializeSwiper() {
     const swiperElement = document.querySelector('.videoProjectsSwiper');
     
-    this.swiper = new Swiper(swiperElement, {
-      // Core settings
-      loop: true,
-      effect: 'fade',
-      speed: 1200,
-      grabCursor: true,
-      watchSlidesProgress: true,
-      
-      // Autoplay configuration
-      autoplay: {
-        delay: CONFIG?.autoplayDelay || 6000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      },
-      
-      // Navigation
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      
-      // Pagination
-  // Replace the pagination configuration with this complete version
-pagination: {
-    el: '.swiper-pagination',
-    clickable: true,
-    bulletElement: 'button',
-    bulletClass: 'swiper-pagination-bullet',
-    bulletActiveClass: 'swiper-pagination-bullet-active',
-    renderBullet: function (index, className) {
-        return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
-    }
-},
-  
-      
-      // Keyboard navigation
-      keyboard: {
-        enabled: true,
-        onlyInViewport: true,
-      },
-      
-      // Accessibility
-      a11y: {
-        prevSlideMessage: 'Proiectul anterior',
-        nextSlideMessage: 'Următorul proiect',
-        firstSlideMessage: 'Acesta este primul slide',
-        lastSlideMessage: 'Acesta este ultimul slide',
-      },
-      
-      // Fade effect settings
-      fadeEffect: {
-        crossFade: true,
-      },
-      
-      // Event callbacks
-      on: {
-        init: (swiper) => {
-          this.onSwiperInit(swiper);
-        },
-        slideChange: (swiper) => {
-          this.onSlideChange(swiper);
-        },
-        autoplayTimeLeft: (swiper, time, progress) => {
-          this.updateAutoplayProgress(progress);
-        },
-        autoplayStart: () => {
-          this.onAutoplayStart();
-        },
-        autoplayStop: () => {
-          this.onAutoplayStop();
-        },
-        touchStart: () => {
-          this.pauseAllVideos();
-        },
-        touchEnd: () => {
-          this.playActiveVideo();
-        },
-      },
+    // Use requestAnimationFrame to prevent forced sync layouts
+    requestAnimationFrame(() => {
+        // Measure layout properties before any DOM changes
+        const containerWidth = swiperElement.offsetWidth;
+        const containerHeight = swiperElement.offsetHeight;
+        
+        // Create a document fragment to minimize reflows
+        const fragment = document.createDocumentFragment();
+        
+        // Initialize Swiper with optimized settings
+        this.swiper = new Swiper(swiperElement, {
+            // Core settings
+            loop: true,
+            effect: 'fade',
+            speed: 1200,
+            grabCursor: true,
+            watchSlidesProgress: true,
+            
+            // Autoplay configuration
+            autoplay: {
+                delay: CONFIG?.autoplayDelay || 6000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            
+            // Navigation
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            
+            // Pagination
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                bulletElement: 'button',
+                bulletClass: 'swiper-pagination-bullet',
+                bulletActiveClass: 'swiper-pagination-bullet-active',
+                renderBullet: function (index, className) {
+                    return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
+                }
+            },
+            
+            // Keyboard navigation
+            keyboard: {
+                enabled: true,
+                onlyInViewport: true,
+            },
+            
+            // Accessibility
+            a11y: {
+                prevSlideMessage: 'Proiectul anterior',
+                nextSlideMessage: 'Următorul proiect',
+                firstSlideMessage: 'Acesta este primul slide',
+                lastSlideMessage: 'Acesta este ultimul slide',
+            },
+            
+            // Fade effect settings
+            fadeEffect: {
+                crossFade: true,
+            },
+            
+            // Event callbacks - wrap in requestAnimationFrame
+            on: {
+                init: (swiper) => {
+                    requestAnimationFrame(() => {
+                        this.onSwiperInit(swiper);
+                    });
+                },
+                slideChange: (swiper) => {
+                    requestAnimationFrame(() => {
+                        this.onSlideChange(swiper);
+                    });
+                },
+                autoplayTimeLeft: (swiper, time, progress) => {
+                    requestAnimationFrame(() => {
+                        this.updateAutoplayProgress(progress);
+                    });
+                },
+                autoplayStart: () => {
+                    this.onAutoplayStart();
+                },
+                autoplayStop: () => {
+                    this.onAutoplayStop();
+                },
+                touchStart: () => {
+                    this.pauseAllVideos();
+                },
+                touchEnd: () => {
+                    this.playActiveVideo();
+                },
+            },
+        });
+        
+        this.isInitialized = true;
     });
+}
 
-    this.isInitialized = true;
-  }
 
   onSwiperInit(swiper) {
     // Update slide counter
@@ -557,26 +573,33 @@ window.CinematicCarousel = CinematicCarousel;
    6.  LAZY MODULES
 --------------------------------------------------------- */
 function initProjectsSwiper() {
-  const el = document.querySelector('.projectsSwiper'); // Presupunem un selector generic; ajustează dacă este necesar
-  if (!el) return;
+    const el = document.querySelector('.projectsSwiper');
+    if (!el) return;
 
-  new Swiper(el, {
-    loop: true,
-    spaceBetween: 10,
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false,
-    },
-    breakpoints: {
-      640: { slidesPerView: 1 },
-      768: { slidesPerView: 2 },
-      1024: { slidesPerView: 3 },
-    },
-  });
+    // Use requestAnimationFrame to prevent forced sync layouts
+    requestAnimationFrame(() => {
+        // Measure layout properties before any DOM changes
+        const containerWidth = el.offsetWidth;
+        
+        // Initialize Swiper with optimized settings
+        new Swiper(el, {
+            loop: true,
+            spaceBetween: 10,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: { slidesPerView: 1 },
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+            },
+        });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

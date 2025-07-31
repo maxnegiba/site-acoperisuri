@@ -255,7 +255,7 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer crossorigin></script>
    
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.5/dist/js/lightbox.min.js" defer crossorigin></script
-    <!-- Critical JavaScript pentru header -->
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Header scroll effect
@@ -407,7 +407,11 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
         <div class="container">
             <!-- Logo -->
             <a href="<?= $base_url ?>" class="logo">
-                <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50">
+                <img src="<?= $assets_path ?>img/logo-text.jpg" 
+     alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
+     class="logo-text" 
+     width="200" 
+     height="50">
             </a>
             
             <!-- Meniu Desktop -->
