@@ -356,13 +356,15 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
 @media (max-width: 991.98px) {
   .nav-desktop,
   .header .cta-button {
+    
     display: none;
   }
-  .hamburger,
-  .nav-mobile {
-    display: block;
-  }
+  .hamburger{display:flex}   /* ← lipsa asta */
+   .nav-mobile{display:block}
+    .header{height:var(--header-height-mobile)}
+    .nav-mobile{top:var(--header-height-mobile);height:calc(100vh - var(--header-height-mobile))}
 }
+
 @media (max-width: 768px) {
   .header {
     height: var(--header-height-mobile);
