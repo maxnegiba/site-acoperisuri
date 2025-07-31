@@ -1,108 +1,171 @@
-<?php
-$protocol    = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-$host        = $_SERVER['HTTP_HOST'];
-$base_url    = $protocol . $host . '/';
-$assets_path = $base_url . 'assets/';
-
-$current_page = basename($_SERVER['PHP_SELF']);
-$request_uri  = $_SERVER['REQUEST_URI'];
-$is_home      = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
-
-$page_title       = $page_title ?? 'MeisterDach – Dachdecker Meisterbetrieb';
-$page_description = $page_description ?? 'Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg. Über 20 Jahre Erfahrung. Kostenlose Beratung & Angebot!';
-?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de"> <!-- Assuming German, adjust if needed -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Titlu și Meta Description - Esențiale pentru SEO -->
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
 
-    <!-- Critical inline styles (header & layout) -->
-    <style>
-        :root{
-            --primary-color:#d32f2f;
-            --header-height:100px;
-            --header-height-mobile:80px;
-            --max-container-width:1400px;
-            --z-high:1000;
-        }
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;color:#2c3e50;overflow-x:hidden}
-        .header{
-            position:fixed;inset:0 0 auto;z-index:var(--z-high);
-            height:var(--header-height);padding:0;
-            background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(248,249,250,.95));
-            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-            box-shadow:0 8px 32px rgba(0,0,0,.08);
-            transition:all .4s cubic-bezier(.4,0,.2,1);
-        }
-        .header .container{
-            width:100%;max-width:var(--max-container-width);margin:0 auto;
-            display:flex;align-items:center;justify-content:space-between;
-            height:100%;padding:0 32px;
-        }
-        .logo img{max-height:50px;width:auto}
-        .nav-desktop{display:flex;gap:.5rem;margin-left:auto}
-        .nav-desktop ul{display:flex;gap:.5rem;list-style:none}
-        .nav-desktop a{color:#2c3e50;font-weight:600;padding:.75rem 1.25rem;border-radius:25px;transition:all .3s}
-        .nav-desktop a.active,.nav-desktop a:hover{background:var(--primary-color);color:#fff}
-        .hamburger{display:none;flex-direction:column;gap:4px;background:transparent;border:none;cursor:pointer}
-        .hamburger span{width:24px;height:2px;background:var(--primary-color);transition:.3s}
-        .nav-mobile{display:none;position:fixed;top:var(--header-height);left:-100%;width:85%;max-width:300px;height:calc(100vh - var(--header-height));background:#fff;transition:left .4s;z-index:calc(var(--z-high) + 5)}
-        .nav-mobile.active{left:0}
-        @media(max-width:991.98px){
-            .nav-desktop{display:none}
-            .hamburger,.nav-mobile{display:block}
-            .header{height:var(--header-height-mobile)}
-            .nav-mobile{top:var(--header-height-mobile);height:calc(100vh - var(--header-height-mobile))}
-        }
-    </style>
+    <!-- Preload resurse critice pentru afișarea inițială -->
+    <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
+    <!-- Preload your main CSS if needed (optional, often handled by the link tag itself) -->
+    <!-- <link rel="preload" href="<?= $assets_path ?>css/main.css" as="style"> -->
 
-    <!-- Unified CSS & external libs -->
-    <link rel="preload" href="<?= $assets_path ?>css/all.css" as="style">
-    <link rel="stylesheet" href="<?= $assets_path ?>css/all.css">
+    <!-- ===== MAIN STYLESHEET ===== -->
+    <!-- This replaces all the individual CSS imports and the large inline critical CSS block -->
+    <link rel="stylesheet" href="<?= $assets_path ?>css/main.css">
+    <!-- ===== /MAIN STYLESHEET ===== -->
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
+    <!-- Dacă ai un font custom critic, preconectează și preîncarcă-l -->
+    <!-- Example for Google Fonts (if used and considered critical): -->
+    <!--
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
+    -->
 
-    <!-- Scripts (deferred) -->
-    <script src="<?= $assets_path ?>js/main.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" defer></script>
+    <!-- Component CSS - încărcare asincronă (if you have other non-critical component CSS) -->
+    <!-- Example for carousel if it's separate and non-critical -->
+    <!--
+    <link rel="preload" href="<?= $assets_path ?>css/components/carousel.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/carousel.css"></noscript>
+    -->
+    <!-- Add other non-critical CSS files similarly if needed -->
+
+    <!-- Google Analytics etc. would go here -->
+
 </head>
 <body>
+
+    <!-- Header HTML Structure -->
     <header class="header">
         <div class="container">
             <a href="<?= $base_url ?>" class="logo">
-                <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Der Hausmeister Michael GmbH" width="200" height="50">
+                <img src="<?= $assets_path ?>img/logo-main.png" alt="Logo Der Hausmeister Michael GmbH" class="logo-main">
+                <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Der Hausmeister Michael GmbH" class="logo-text">
             </a>
 
-            <nav class="nav-desktop" aria-label="Hauptnavigation">
+            <!-- Desktop Navigation -->
+            <nav class="nav-desktop">
                 <ul>
-                    <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
-                    <li><a href="<?= $base_url ?>about.php" class="<?= $current_page==='about.php'?'active':'' ?>">Über uns</a></li>
-                    <li><a href="<?= $base_url ?>services.php" class="<?= $current_page==='services.php'?'active':'' ?>">Dienstleistungen</a></li>
-                    <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page==='projects.php'?'active':'' ?>">Unsere Projekte</a></li>
-                    <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page==='contact.php'?'active':'' ?> cta-button">Kontakt</a></li>
+                    <li><a href="<?= $base_url ?>index.php" class="<?= $current_page === 'index.php' ? 'active' : '' ?>">Home</a></li>
+                    <li><a href="<?= $base_url ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
+                    <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
+                    <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?>">Kontakt</a></li>
                 </ul>
+                <!-- CTA Button inside Desktop Nav (adjust if needed) -->
+                <a href="<?= $base_url ?>contact.php" class="cta-button">Kostenlos Beraten</a>
             </nav>
 
-            <button class="hamburger mobile-nav" aria-label="Menü öffnen" aria-controls="nav-mobile" aria-expanded="false">
-                <span></span><span></span><span></span>
+            <!-- Mobile Hamburger Menu Toggle -->
+            <button class="hamburger" aria-label="Menü umschalten" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <nav class="nav-mobile" id="nav-mobile">
-                <ul>
-                    <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
-                    <li><a href="<?= $base_url ?>about.php" class="<?= $current_page==='about.php'?'active':'' ?>">Über uns</a></li>
-                    <li><a href="<?= $base_url ?>services.php" class="<?= $current_page==='services.php'?'active':'' ?>">Dienstleistungen</a></li>
-                    <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page==='projects.php'?'active':'' ?>">Unsere Projekte</a></li>
-                    <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page==='contact.php'?'active':'' ?>">Kontakt</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
+
+    <!-- Mobile Navigation Menu (Hidden by CSS on desktop) -->
+    <nav class="nav-mobile">
+        <ul>
+            <li><a href="<?= $base_url ?>index.php" class="<?= $current_page === 'index.php' ? 'active' : '' ?>">Home</a></li>
+            <li><a href="<?= $base_url ?>services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Dienstleistungen</a></li>
+            <li><a href="<?= $base_url ?>projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Unsere Projekte</a></li>
+            <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?>">Kontakt</a></li>
+            <!-- CTA Button inside Mobile Nav (adjust if needed) -->
+            <li><a href="<?= $base_url ?>contact.php" class="btn btn--primary">Kostenlos Beraten</a></li>
+        </ul>
+    </nav>
+
+    <!-- Mobile overlay -->
     <div class="mobile-overlay"></div>
+    <!-- /Header HTML Structure -->
+
+    <!-- JavaScript for Header Functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Header scroll effect
+            const header = document.querySelector('.header');
+            const heroSection = document.querySelector('.hero-section'); // For homepage
+
+            if (header) {
+                // Scroll effect
+                let scrollTimeout;
+                window.addEventListener('scroll', function() {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(function() {
+                        if (window.scrollY > 50) {
+                            header.classList.add('scrolled');
+                        } else {
+                            header.classList.remove('scrolled');
+                        }
+                    }, 10);
+                });
+
+                // Update hero padding (only on homepage where heroSection exists)
+                if (heroSection) {
+                    const updateHeroPadding = () => {
+                        const headerHeight = header.offsetHeight;
+                        heroSection.style.paddingTop = headerHeight + 'px';
+                    };
+                    updateHeroPadding();
+                    window.addEventListener('resize', updateHeroPadding);
+                }
+            }
+
+            // Mobile menu
+            const hamburger = document.querySelector('.hamburger');
+            const mobileNav = document.querySelector('.nav-mobile');
+            const mobileOverlay = document.querySelector('.mobile-overlay');
+
+            if (hamburger && mobileNav) {
+                hamburger.addEventListener('click', function() {
+                    const isActive = hamburger.classList.contains('active');
+                    hamburger.classList.toggle('active');
+                    mobileNav.classList.toggle('active');
+                    if (mobileOverlay) {
+                        mobileOverlay.classList.toggle('active');
+                    }
+
+                    // Animate hamburger
+                    const spans = hamburger.querySelectorAll('span');
+                    if (!isActive) {
+                        spans[0].style.transform = 'rotate(45deg) translate(7px, 7px)';
+                        spans[1].style.opacity = '0';
+                        spans[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+                        document.body.style.overflow = 'hidden'; // Prevent body scroll
+                    } else {
+                        spans[0].style.transform = 'none';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'none';
+                        document.body.style.overflow = ''; // Restore body scroll
+                    }
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!hamburger.contains(e.target) && !mobileNav.contains(e.target) && hamburger.classList.contains('active')) {
+                        hamburger.classList.remove('active');
+                        mobileNav.classList.remove('active');
+                        if (mobileOverlay) {
+                            mobileOverlay.classList.remove('active');
+                        }
+                        // Reset hamburger animation
+                        const spans = hamburger.querySelectorAll('span');
+                        spans[0].style.transform = 'none';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'none';
+                        document.body.style.overflow = ''; // Restore body scroll
+                    }
+                });
+            }
+        });
+    </script>
+    <!-- /JavaScript for Header Functionality -->
+
+    <!-- Begin Main Content -->
     <main>
