@@ -28,6 +28,7 @@ if (!isset($page_description)) {
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
     <!-- Preload resurse critice pentru afișarea inițială -->
     <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <!-- Dacă ai un font custom critic, preconectează și preîncarcă-l -->
     <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
     <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
