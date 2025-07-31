@@ -83,8 +83,13 @@ section {
     box-sizing: border-box;
 }
 
+/* Adaugă în main.css */
 html {
-    scroll-behavior: smooth;
+    /* Previne schimbările de aspect la încărcarea fonturilor */
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    /* Asigură o înălțime stabilă */
+    height: 100%;
 }
 
 body {
@@ -95,10 +100,12 @@ body {
     color: var(--text-primary);
     background: var(--bg-white);
     overflow-x: hidden;
-    /* Adaugă aceste proprietăți pentru a preveni CLS */
+    /* Asigură un layout stabil */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    /* Previne recalculările de layout */
+    contain: layout style paint;
 }
 
 /* Corectare pentru header */
@@ -110,12 +117,16 @@ body {
 }
 
 /* Asigură-te că main-ul începe sub header */
+
 main {
     flex: 1;
     width: 100%;
+    /* Asigură că main-ul începe la o poziție fixă */
     margin-top: var(--header-height);
-    /* Adaugă această proprietate */
+    /* Previne schimbările de aspect */
     contain: layout;
+    /* Asigură o înălțime minimă stabilă */
+    min-height: calc(100vh - var(--header-height));
 }
 
 

@@ -10,7 +10,36 @@
    • Accessibility helpers
    • Performance optimisations
 ========================================================= */
+/* Adaugă la începutul fișierului main.js */
+// Previne rearanjările forțate prin batchuire a operațiilor DOM
+const batchDOMUpdates = (updates) => {
+    requestAnimationFrame(() => {
+        // Creează un document fragment pentru a minimiza reflow
+        const fragment = document.createDocumentFragment();
+        
+        // Aplică toate actualizările
+        updates.forEach(update => {
+            if (update.element && update.styles) {
+                Object.assign(update.element.style, update.styles);
+            }
+        });
+    });
+};
 
+/* Actualizează funcția updateHeaderState pentru a folosi batchDOMUpdates */
+function updateHeaderState() {
+    if (!header) return;
+    
+    batchDOMUpdates([
+        {
+            element: header,
+            styles: {
+                transform: window.scrollY > 50 ? 'translateY(-5px)' : 'translateY(0)',
+                boxShadow: window.scrollY > 50 ? '0 4px 20px rgba(0, 0, 0, 0.1)' : '0 8px 32px rgba(0, 0, 0, 0.08)'
+            }
+        }
+    ]);
+}
 /* ---------------------------------------------------------
    1.  CONFIG / UTILS
 --------------------------------------------------------- */
@@ -51,16 +80,36 @@ function syncHeroPadding() {
     
     // Folosește requestAnimationFrame pentru a preveni layout forțat
     requestAnimationFrame(() => {
+        // Obține dimensiunile o singură dată
         const headerHeight = header.offsetHeight;
-        heroSection.style.paddingTop = `${headerHeight}px`;
-        heroSection.style.marginTop = `-${headerHeight}px`;
-        heroSection.style.minHeight = `calc(100vh - ${headerHeight}px)`;
         
-        // Actualizează înălțimea containerului video
+        // Aplică toate schimbările deodată pentru a minimiza reflow
+        const heroStyles = {
+            paddingTop: `${headerHeight}px`,
+            marginTop: `-${headerHeight}px`,
+            minHeight: `calc(100vh - ${headerHeight}px)`
+        };
+        
+        Object.assign(heroSection.style, heroStyles);
+        
+        // Actualizează și containerul video dacă există
         const videoContainer = heroSection.querySelector('.hero-video-container');
         if (videoContainer) {
-            videoContainer.style.minHeight = `calc(100vh - ${headerHeight}px)`;
-            videoContainer.style.maxHeight = `calc(100vh - ${headerHeight}px)`;
+            const containerStyles = {
+                minHeight: `calc(100vh - ${headerHeight}px)`,
+                maxHeight: `calc(100vh - ${headerHeight}px)`
+            };
+            Object.assign(videoContainer.style, containerStyles);
+        }
+        
+        // Actualizează overlay-ul
+        const overlay = heroSection.querySelector('.hero-overlay');
+        if (overlay) {
+            const overlayStyles = {
+                minHeight: `calc(100vh - ${headerHeight}px)`,
+                maxHeight: `calc(100vh - ${headerHeight}px)`
+            };
+            Object.assign(overlay.style, overlayStyles);
         }
     });
 }
@@ -78,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroVideo = document.querySelector('.hero-video');
   const heroSection = document.querySelector('.hero-section');
   const videoContainer = document.querySelector('.hero-video-container');
+  const overlay = heroSection?.querySelector('.hero-overlay');
   
   if (!heroVideo) return;
 
@@ -85,29 +135,32 @@ document.addEventListener('DOMContentLoaded', () => {
   heroVideo.style.opacity = '0';
   heroVideo.style.visibility = 'hidden';
   
-  // Asigură-te că containerul are dimensiuni fixe
-  if (videoContainer) {
-    videoContainer.style.minHeight = 'calc(100vh - var(--header-height))';
-    videoContainer.style.maxHeight = 'calc(100vh - var(--header-height))';
-  }
+  // Asigură dimensiuni fixe pentru toate elementele
+  const updateDimensions = () => {
+    const headerHeight = header?.offsetHeight || 100;
+    const sectionHeight = `calc(100vh - ${headerHeight}px)`;
+    
+    // Actualizează secțiunea hero
+    if (heroSection) {
+      heroSection.style.minHeight = sectionHeight;
+      heroSection.style.maxHeight = sectionHeight;
+    }
+    
+    // Actualizează containerul video
+    if (videoContainer) {
+      videoContainer.style.minHeight = sectionHeight;
+      videoContainer.style.maxHeight = sectionHeight;
+    }
+    
+    // Actualizează overlay-ul
+    if (overlay) {
+      overlay.style.minHeight = sectionHeight;
+      overlay.style.maxHeight = sectionHeight;
+    }
+  };
   
-  // Creează un placeholder dacă nu există deja
-  const placeholder = document.createElement('div');
-  placeholder.className = 'video-placeholder';
-  placeholder.style.backgroundImage = `url(${heroVideo.getAttribute('poster')})`;
-  placeholder.style.backgroundSize = 'cover';
-  placeholder.style.backgroundPosition = 'center';
-  placeholder.style.position = 'absolute';
-  placeholder.style.top = '0';
-  placeholder.style.left = '0';
-  placeholder.style.width = '100%';
-  placeholder.style.height = '100%';
-  placeholder.style.zIndex = '1';
-  
-  // Adaugă placeholder doar dacă nu există deja
-  if (!videoContainer.querySelector('.video-placeholder')) {
-    videoContainer.appendChild(placeholder);
-  }
+  // Aplică dimensiunile inițiale
+  updateDimensions();
   
   heroVideo.addEventListener('loadeddata', () => {
     heroVideo.setAttribute('data-loaded', 'true');
@@ -115,19 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
     heroVideo.style.visibility = 'visible';
     heroVideo.style.transition = 'opacity 0.5s ease';
     heroVideo.style.opacity = '1';
-    
-    // Elimină placeholder după ce video s-a încărcat
-    setTimeout(() => {
-      if (placeholder && placeholder.parentNode) {
-        placeholder.style.transition = 'opacity 0.5s ease';
-        placeholder.style.opacity = '0';
-        setTimeout(() => {
-          if (placeholder.parentNode) {
-            placeholder.parentNode.removeChild(placeholder);
-          }
-        }, 500);
-      }
-    }, 1000);
   });
 
   // Fallback dacă video nu se încarcă
@@ -137,25 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
       heroVideo.style.visibility = 'visible';
       heroVideo.style.transition = 'opacity 0.5s ease';
       heroVideo.style.opacity = '1';
-      
-      // Păstrează placeholder dacă video nu se încarcă
-      if (placeholder) {
-        placeholder.style.opacity = '1';
-      }
     }
   }, 3500);
 
-  // Încearcă autoplay. Dacă e blocat, arată imaginea de rezervă
+  // Încearcă autoplay
   const playPromise = heroVideo.play();
   if (playPromise !== undefined) {
     playPromise.catch(() => {
       heroVideo.style.display = 'none';
-      heroSection.style.backgroundImage = `url(${heroVideo.getAttribute('poster')})`;
-      heroSection.style.backgroundSize = 'cover';
-      heroSection.style.backgroundPosition = 'center';
+      if (heroSection) {
+        heroSection.style.backgroundImage = `url(${heroVideo.getAttribute('poster')})`;
+        heroSection.style.backgroundSize = 'cover';
+        heroSection.style.backgroundPosition = 'center';
+      }
     });
   }
-});;
+  
+  // Actualizează dimensiunile la resize
+  window.addEventListener('resize', debounce(updateDimensions, 100));
+});
 
 /* ==========================================================================
    ENHANCED CINEMATIC SWIPER INITIALIZATION
