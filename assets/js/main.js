@@ -47,43 +47,115 @@ window.addEventListener('scroll', debounce(updateHeaderState, 50));
 
 /* Adjust hero padding when header resizes */
 function syncHeroPadding() {
-  if (!heroSection || !header) return;
-  heroSection.style.paddingTop = header.offsetHeight + 'px';
+    if (!heroSection || !header) return;
+    
+    // Folosește requestAnimationFrame pentru a preveni layout forțat
+    requestAnimationFrame(() => {
+        const headerHeight = header.offsetHeight;
+        heroSection.style.paddingTop = `${headerHeight}px`;
+        heroSection.style.marginTop = `-${headerHeight}px`;
+        heroSection.style.minHeight = `calc(100vh - ${headerHeight}px)`;
+        
+        // Actualizează înălțimea containerului video
+        const videoContainer = heroSection.querySelector('.hero-video-container');
+        if (videoContainer) {
+            videoContainer.style.minHeight = `calc(100vh - ${headerHeight}px)`;
+            videoContainer.style.maxHeight = `calc(100vh - ${headerHeight}px)`;
+        }
+    });
 }
+
+// Apelează syncHeroPadding la încărcare și resize
 window.addEventListener('resize', debounce(syncHeroPadding));
 document.addEventListener('DOMContentLoaded', syncHeroPadding);
 
+// Apelează și după ce header-ul este complet încărcat
+window.addEventListener('load', syncHeroPadding);
 /* ---------------------------------------------------------
    3.  HERO VIDEO LAZY-LOAD & AUTOPLAY
 --------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   const heroVideo = document.querySelector('.hero-video');
+  const heroSection = document.querySelector('.hero-section');
+  const videoContainer = document.querySelector('.hero-video-container');
+  
   if (!heroVideo) return;
 
-  heroVideo.setAttribute('data-loading', 'true');
-
+  // Setează starea inițială pentru a preveni layout shift
+  heroVideo.style.opacity = '0';
+  heroVideo.style.visibility = 'hidden';
+  
+  // Asigură-te că containerul are dimensiuni fixe
+  if (videoContainer) {
+    videoContainer.style.minHeight = 'calc(100vh - var(--header-height))';
+    videoContainer.style.maxHeight = 'calc(100vh - var(--header-height))';
+  }
+  
+  // Creează un placeholder dacă nu există deja
+  const placeholder = document.createElement('div');
+  placeholder.className = 'video-placeholder';
+  placeholder.style.backgroundImage = `url(${heroVideo.getAttribute('poster')})`;
+  placeholder.style.backgroundSize = 'cover';
+  placeholder.style.backgroundPosition = 'center';
+  placeholder.style.position = 'absolute';
+  placeholder.style.top = '0';
+  placeholder.style.left = '0';
+  placeholder.style.width = '100%';
+  placeholder.style.height = '100%';
+  placeholder.style.zIndex = '1';
+  
+  // Adaugă placeholder doar dacă nu există deja
+  if (!videoContainer.querySelector('.video-placeholder')) {
+    videoContainer.appendChild(placeholder);
+  }
+  
   heroVideo.addEventListener('loadeddata', () => {
     heroVideo.setAttribute('data-loaded', 'true');
-    heroVideo.removeAttribute('data-loading');
+    // Fă video vizibil și fade-in
+    heroVideo.style.visibility = 'visible';
+    heroVideo.style.transition = 'opacity 0.5s ease';
+    heroVideo.style.opacity = '1';
+    
+    // Elimină placeholder după ce video s-a încărcat
+    setTimeout(() => {
+      if (placeholder && placeholder.parentNode) {
+        placeholder.style.transition = 'opacity 0.5s ease';
+        placeholder.style.opacity = '0';
+        setTimeout(() => {
+          if (placeholder.parentNode) {
+            placeholder.parentNode.removeChild(placeholder);
+          }
+        }, 500);
+      }
+    }, 1000);
   });
 
-  /* Fallback if video fails to load */
+  // Fallback dacă video nu se încarcă
   setTimeout(() => {
     if (!heroVideo.hasAttribute('data-loaded')) {
       heroVideo.setAttribute('data-loaded', 'true');
-      heroVideo.removeAttribute('data-loading');
+      heroVideo.style.visibility = 'visible';
+      heroVideo.style.transition = 'opacity 0.5s ease';
+      heroVideo.style.opacity = '1';
+      
+      // Păstrează placeholder dacă video nu se încarcă
+      if (placeholder) {
+        placeholder.style.opacity = '1';
+      }
     }
   }, 3500);
 
-  /* Try autoplay. If blocked, show fallback image */
+  // Încearcă autoplay. Dacă e blocat, arată imaginea de rezervă
   const playPromise = heroVideo.play();
   if (playPromise !== undefined) {
     playPromise.catch(() => {
       heroVideo.style.display = 'none';
-      heroSection.style.backgroundImage = 'url(assets/img/hero-fallback.jpg)';
+      heroSection.style.backgroundImage = `url(${heroVideo.getAttribute('poster')})`;
+      heroSection.style.backgroundSize = 'cover';
+      heroSection.style.backgroundPosition = 'center';
     });
   }
-});
+});;
 
 /* ==========================================================================
    ENHANCED CINEMATIC SWIPER INITIALIZATION
