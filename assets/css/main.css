@@ -1234,3 +1234,10 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     font-size: 1rem; /* Smaller font */
   }
 }
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap);
+}

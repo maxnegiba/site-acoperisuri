@@ -1,5 +1,4 @@
 <?php
-// index.php - Pagina principală a site-ului
 // Setări SEO pentru pagina principală
 $page_title = "Dachdecker Berlin Brandenburg | Klempner & Zimmermann | Der Hausmeister Michael GmbH";
 $page_description = "Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg. Über 20 Jahre Erfahrung. Kostenlose Beratung & Angebot!";
@@ -9,11 +8,7 @@ include(__DIR__ . '/includes/header.php');
 ?>
 
 <!-- CSS Critic pentru Homepage -->
-<<<<<<< HEAD
 
-=======
-<
->>>>>>> e4f1572f08c7c8917e513d033af3f0f3fa781ea3
 
 <!-- HERO SECTION -->
 <section class="hero-section">
@@ -23,8 +18,7 @@ include(__DIR__ . '/includes/header.php');
            loop
            playsinline
            preload="metadata"
-           poster="<?= $assets_path ?>images/hero-video.webp">
-        <source src="<?= $assets_path ?>video/hero-video.webm" type="video/webm">
+           >
         <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
     </video>
     <!-- Overlay -->
@@ -108,8 +102,9 @@ include(__DIR__ . '/includes/header.php');
       <!-- Slide 1 – Dachsanierung -->
       <div class="swiper-slide">
         <div class="video-container">
-          <video class="bg-video" autoplay loop playsinline preload="metadata">
-            <source src="<?= $assets_path ?>video/projects/project1-lite.mp4" type="video/mp4">
+          <video class="bg-video" autoplay loop playsinline preload="metadata"
+                 poster="<?= $assets_path ?>images/projects/project1-poster.webp">
+            <source src="<?= $assets_path ?>video/projects/project1.mp4" type="video/mp4">
             <source src="<?= $assets_path ?>video/projects/project1.webm" type="video/webm">
             Ihr Browser unterstützt kein Video-Tag.
           </video>
@@ -142,8 +137,8 @@ include(__DIR__ . '/includes/header.php');
       <div class="swiper-slide">
         <div class="video-container">
           <video class="bg-video" autoplay loop playsinline preload="metadata"
-                 >
-            <source src="<?= $assets_path ?>video/projects/project2-lite.mp4" type="video/mp4">
+                 poster="<?= $assets_path ?>images/projects/project2-poster.webp">
+            <source src="<?= $assets_path ?>video/projects/project2.mp4" type="video/mp4">
             <source src="<?= $assets_path ?>video/projects/project2.webm" type="video/webm">
             Ihr Browser unterstützt kein Video-Tag.
           </video>
@@ -176,8 +171,8 @@ include(__DIR__ . '/includes/header.php');
       <div class="swiper-slide">
         <div class="video-container">
           <video class="bg-video" autoplay muted playsinline preload="metadata"
-              >
-            <source src="<?= $assets_path ?>video/projects/project3-lite.mp4" type="video/mp4">
+                 poster="<?= $assets_path ?>images/projects/project3-poster.webp">
+            <source src="<?= $assets_path ?>video/projects/project3.mp4" type="video/mp4">
             <source src="<?= $assets_path ?>video/projects/project3.webm" type="video/webm">
             Ihr Browser unterstützt kein Video-Tag.
           </video>
@@ -210,9 +205,9 @@ include(__DIR__ . '/includes/header.php');
       <div class="swiper-slide">
         <div class="video-container">
           <video class="bg-video" autoplay loop playsinline preload="metadata"
-          >
-            <source src="<?= $assets_path ?>video/projects/project2-lite.mp4" type="video/mp4">
-            <source src="<?= $assets_path ?>video/projects/project4.webm" type="video/webm">
+                 poster="<?= $assets_path ?>images/projects/project4-poster.webp">
+            <source src="<?= $assets_path ?>video/projects/project4.mp4" type="video/mp4">
+          
             Ihr Browser unterstützt kein Video-Tag.
           </video>
           <div class="video-overlay"></div>
