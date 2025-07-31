@@ -14,6 +14,13 @@
 /* ---------------------------------------------------------
    1.  CONFIG / UTILS
 --------------------------------------------------------- */
+// Asigură-te că inițializezi lightbox doar după ce DOM-ul este gata
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof lightbox !== 'undefined') {
+    lightbox.init();
+  }
+});
+
 const CONFIG = {
   debounceDelay: 150,
   autoplayDelay: 6000,
@@ -606,14 +613,23 @@ const preload = (href, as = 'image') => {
 
 
 
-swiper.on('slideChange', function () {
-  const bullets = document.querySelectorAll('.swiper-pagination-bullet');
-  bullets.forEach((bullet, index) => {
-    if (index === swiper.activeIndex) {
-      bullet.setAttribute('aria-current', 'true');
-    } else {
-      bullet.removeAttribute('aria-current');
-    }
+// Înlocuiește codul problematic din main.js (linia 609) cu:
+document.addEventListener('DOMContentLoaded', function() {
+  // Inițializează Swiper corect
+  const swiper = new Swiper('.swiper-container', {
+    // opțiunile tale aici
+  });
+  
+  // Abia acum poți folosi evenimentele swiper
+  swiper.on('slideChange', function () {
+    const bullets = document.querySelectorAll('.swiper-pagination-bullet');
+    bullets.forEach((bullet, index) => {
+      if (index === swiper.activeIndex) {
+        bullet.setAttribute('aria-current', 'true');
+      } else {
+        bullet.removeAttribute('aria-current');
+      }
+    });
   });
 });
 
