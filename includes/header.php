@@ -1,42 +1,60 @@
 <?php
+// Depanare - activare afișare erori (dezactivează în producție)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Determină URL-ul absolut al root-ului site-ului
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
 $host = $_SERVER['HTTP_HOST'];
 $base_url = $protocol . $host . '/';
 $assets_path = $base_url . 'assets/';
+
 // Determină pagina curentă pentru meniul activ și logica CSS
 $current_page = basename($_SERVER['PHP_SELF']);
 $request_uri = $_SERVER['REQUEST_URI'];
 $is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
+
 // Asigură că $page_title și $page_description sunt definite pentru fiecare pagină
-// Paginile individuale le vor seta explicit
 if (!isset($page_title)) {
     $page_title = 'MeisterDach - Dachdecker Meisterbetrieb';
 }
 if (!isset($page_description)) {
-    // Descriere generală implicită, dar ideal ar fi una specifică pentru fiecare pagină
     $page_description = 'Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg. Über 20 Jahre Erfahrung. Kostenlose Beratung & Angebot!';
 }
+
+// Funcție pentru a determina calea către CSS-ul specific paginii
+function getPageSpecificCSS($current_page, $assets_path, $is_home) {
+    if ($is_home) {
+        return $assets_path . 'css/main.css';
+    }
+    
+    $css_files = [
+        'contact.php' => $assets_path . 'css/contact.css',
+        'services.php' => $assets_path . 'css/services.css',
+        'projects.php' => $assets_path . 'css/projects.css',
+        'about.php' => $assets_path . 'css/about.php'
+    ];
+    
+    return isset($css_files[$current_page]) ? $css_files[$current_page] : $assets_path . 'css/main.css';
+}
+
+// Determină calea către CSS-ul specific paginii curente
+$page_specific_css = getPageSpecificCSS($current_page, $assets_path, $is_home);
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Titlu și Meta Description - Esențiale pentru SEO -->
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
+    
     <!-- Preload resurse critice pentru afișarea inițială -->
-     <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
-<link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
+    <?php if ($is_home): ?>
+        <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
+    <?php endif; ?>
     <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <!-- Dacă ai un font custom critic, preconectează și preîncarcă-l -->
-    <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
-    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
-    <!-- <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
-    <!-- <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript> -->
-
+    
     <!-- CSS Critic Inline pentru Header - Asigură afișarea corectă fără FOUC -->
     <style>
         /* === CRITICAL HEADER STYLES - INLINE === */
@@ -55,7 +73,7 @@ if (!isset($page_description)) {
             padding: 0;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
+        
         .header .container {
             width: 100%;
             max-width: 1400px;
@@ -67,10 +85,10 @@ if (!isset($page_description)) {
             padding: 0 32px;
             position: relative;
         }
-
+        
         /* === DESKTOP NAVIGATION - CRITICAL PARTS === */
         .nav-desktop {
-            display: flex; /* Asigură afișarea corectă */
+            display: flex;
             align-items: center;
             gap: 8px;
             margin-left: 2rem;
@@ -82,20 +100,20 @@ if (!isset($page_description)) {
             border: 1px solid rgba(255, 255, 255, 0.3);
             z-index: 1005;
         }
-
+        
         .nav-desktop ul {
-            display: flex; /* Asigură afișarea corectă */
+            display: flex;
             list-style: none;
             margin: 0;
             padding: 0;
             gap: 8px;
             align-items: center;
         }
-
+        
         .nav-desktop li {
             position: relative;
         }
-
+        
         .nav-desktop a {
             text-decoration: none;
             color: #2c3e50;
@@ -106,121 +124,132 @@ if (!isset($page_description)) {
             position: relative;
             transition: all 0.3s ease;
             overflow: hidden;
-            display: block; /* Asigură afișarea corectă */
+            display: block;
         }
-
+        
+        .nav-desktop a.active {
+            color: #fff;
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+            transform: translateY(-1px);
+        }
+        
         /* === MOBILE NAVIGATION - CRITICAL PARTS (hidden by default) === */
-        /* Acestea sunt esențiale pentru a ascunde corect meniul mobil pe desktop */
         .mobile-nav,
         .hamburger,
-        .nav-mobile { /* <= LINIA IMPORTANTĂ CARE LIPSEA */
-            display: none; /* Ascunde meniul mobil și hamburger pe desktop */
+        .nav-mobile {
+            display: none;
         }
-
+        
         /* === MEDIA QUERY pentru mobil - CRITICAL === */
-        /* Repetă partea esențială pentru a afișa mobil și ascunde desktop pe ecrane mici */
         @media (max-width: 991.98px) {
             .nav-desktop,
-            .header .cta-button { /* Dacă .cta-button e doar în meniul mobil, ajustează */
-                display: none; /* Ascunde pe mobil */
+            .header .cta-button {
+                display: none;
             }
-
+            
             .mobile-nav,
             .hamburger,
-            .nav-mobile { /* Asigură afișarea pe mobil */
-                display: block; /* Afișează hamburger și meniu mobil */
+            .nav-mobile {
+                display: block;
             }
-            /* Adaugă aici și stilurile critice minime pentru .hamburger și .nav-mobile dacă sunt esențiale pentru layout-ul inițial */
+            
             .hamburger {
                 position: relative;
-                /* ... restul stilurilor critice minime pentru hamburger ... */
-                display: flex; /* Asigură afișarea corectă */
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(15px);
+                border: 2px solid rgba(211, 47, 47, 0.1);
+                border-radius: 12px;
+                padding: 10px;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
             }
+            
+            .hamburger span {
+                position: absolute;
+                left: 10px;
+                height: 2px;
+                width: 24px;
+                background: linear-gradient(90deg, #d32f2f, #b71c1c);
+                border-radius: 2px;
+                transition: all 0.3s ease;
+            }
+            
+            .hamburger span:nth-child(1) { top: 12px; }
+            .hamburger span:nth-child(2) { top: 20px; }
+            .hamburger span:nth-child(3) { top: 28px; }
+            
             .nav-mobile {
-                /* Stiluri critice minime pentru poziționare inițială */
                 position: fixed;
                 top: 100px;
-                left: -100%; /* Ascuns inițial */
+                left: -100%;
                 width: 85%;
                 max-width: 300px;
                 height: calc(100vh - 100px);
-                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Tranziția este critică */
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 250, 0.98));
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                box-shadow: 4px 0 30px rgba(0, 0, 0, 0.15);
+                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 z-index: 1008;
+                overflow-y: auto;
+                border-right: 1px solid rgba(211, 47, 47, 0.1);
             }
+            
             .nav-mobile.active {
-                left: 0; /* Afișat când e activ */
+                left: 0;
             }
         }
-
-        /* Adaugă și alte media queries critice dacă afectează layout-ul imediat (ex: schimbări de înălțime pe mobil) */
+        
         @media (max-width: 768px) {
             .header { height: 80px; }
             .nav-mobile { top: 80px; height: calc(100vh - 80px); }
             .header.scrolled { height: 70px; }
-            /* Adaugă aici stiluri critice pentru logo dacă se schimbă dimensiunea */
             .logo-main, .logo-text { max-height: 40px; }
             .header.scrolled .logo-main,
             .header.scrolled .logo-text { max-height: 35px; }
         }
-
+        
         /* === PRINT - CRITICAL === */
         @media print {
             .header { position: static; box-shadow: none; background: white; }
             .nav-desktop a, .nav-mobile a { color: black !important; }
         }
     </style>
-    <!-- /CSS Critic Inline pentru Header -->
-
-    <!-- Încărcare asincronă a CSS-ului non-critic sau specific paginii -->
-    <!-- CSS-ul de bază care nu este critic (sau deja inline) -->
     
-    <!-- Page specific CSS - încărcare asincronă -->
-    <?php if ($is_home): ?>
-        <!-- Pentru homepage, main.css este încărcat asincron dacă CSS-ul critic este inline -->
-        <link rel="preload" href="<?= $assets_path ?>css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/main.css"></noscript>
-    <?php else: ?>
-        <!-- Pentru alte pagini, încarcă CSS-ul specific -->
-        <?php if ($current_page === 'contact.php'): ?>
-            <link rel="preload" href="<?= $assets_path ?>css/contact.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/contact.css"></noscript>
-        <?php endif; ?>
-        <?php if ($current_page === 'services.php'): ?>
-            <link rel="preload" href="<?= $assets_path ?>css/services.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/services.css"></noscript>
-        <?php endif; ?>
-        <?php if ($current_page === 'projects.php'): ?>
-            <link rel="preload" href="<?= $assets_path ?>css/projects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/projects.css"></noscript>
-        <?php endif; ?>
-        <?php if ($current_page === 'about.php'): ?>
-            <link rel="preload" href="<?= $assets_path ?>css/about.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-            <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/about.css"></noscript>
-        <?php endif; ?>
-    <?php endif; ?>
+    <!-- Încărcare CSS specific paginii -->
+    <link rel="preload" href="<?= $page_specific_css ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $page_specific_css ?>"></noscript>
+    
     <!-- External libraries - încărcare asincronă -->
-    <!-- Font Awesome CSS -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <!-- Lightbox CSS -->
+    
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css"></noscript>
-    <!-- Swiper CSS -->
+    
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
-    <!-- JavaScript - încărcare deferred pentru a nu bloca parsarea HTML-ului -->
+    
+    <!-- JavaScript - încărcare deferred -->
     <script src="<?= $assets_path ?>js/main.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer crossorigin></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" defer crossorigin></script>
+    
     <!-- Critical JavaScript pentru header -->
     <script>
-    // Încărcăm scriptul principal imediat ce DOM-ul este disponibil
     document.addEventListener('DOMContentLoaded', function() {
         // Header scroll effect
         const header = document.querySelector('.header');
-        const heroSection = document.querySelector('.hero-section'); // For homepage
+        const heroSection = document.querySelector('.hero-section');
+        
         if (header) {
-            // Scroll effect
             let scrollTimeout;
             window.addEventListener('scroll', function() {
                 clearTimeout(scrollTimeout);
@@ -232,7 +261,7 @@ if (!isset($page_description)) {
                     }
                 }, 10);
             });
-            // Update hero padding (only on homepage where heroSection exists)
+            
             if (heroSection) {
                 const updateHeroPadding = () => {
                     const headerHeight = header.offsetHeight;
@@ -242,10 +271,12 @@ if (!isset($page_description)) {
                 window.addEventListener('resize', updateHeroPadding);
             }
         }
+        
         // Mobile menu
         const hamburger = document.querySelector('.hamburger');
         const mobileNav = document.querySelector('.nav-mobile');
         const mobileOverlay = document.querySelector('.mobile-overlay');
+        
         if (hamburger && mobileNav) {
             hamburger.addEventListener('click', function() {
                 const isActive = hamburger.classList.contains('active');
@@ -254,7 +285,7 @@ if (!isset($page_description)) {
                 if (mobileOverlay) {
                     mobileOverlay.classList.toggle('active');
                 }
-                // Animate hamburger
+                
                 const spans = hamburger.querySelectorAll('span');
                 if (!isActive) {
                     spans[0].style.transform = 'rotate(45deg) translate(7px, 7px)';
@@ -268,17 +299,19 @@ if (!isset($page_description)) {
                     document.body.style.overflow = '';
                 }
             });
+            
             // Close mobile menu when clicking outside
             document.addEventListener('click', function(e) {
                 if (mobileNav && mobileNav.classList.contains('active') &&
                     !e.target.closest('.mobile-nav') &&
-                    !e.target.closest('.nav-mobile')) {
+                    !e.target.closest('.nav-mobile') &&
+                    !e.target.closest('.hamburger')) {
                     hamburger.classList.remove('active');
                     mobileNav.classList.remove('active');
                     if (mobileOverlay) {
                         mobileOverlay.classList.remove('active');
                     }
-                    const spans = hamburger ? hamburger.querySelectorAll('span') : [];
+                    const spans = hamburger.querySelectorAll('span');
                     if (spans.length >= 3) {
                         spans[0].style.transform = 'none';
                         spans[1].style.opacity = '1';
@@ -287,19 +320,17 @@ if (!isset($page_description)) {
                     document.body.style.overflow = '';
                 }
             });
+            
             // Close mobile menu when clicking on links
-            const mobileLinks = mobileNav ? mobileNav.querySelectorAll('a') : [];
+            const mobileLinks = mobileNav.querySelectorAll('a');
             mobileLinks.forEach(link => {
                 link.addEventListener('click', function() {
-                    // Ensure elements exist before trying to manipulate them
-                    if (hamburger && mobileNav) {
-                         hamburger.classList.remove('active');
-                         mobileNav.classList.remove('active');
-                    }
+                    hamburger.classList.remove('active');
+                    mobileNav.classList.remove('active');
                     if (mobileOverlay) {
                         mobileOverlay.classList.remove('active');
                     }
-                    const spans = hamburger ? hamburger.querySelectorAll('span') : [];
+                    const spans = hamburger.querySelectorAll('span');
                     if (spans.length >= 3) {
                         spans[0].style.transform = 'none';
                         spans[1].style.opacity = '1';
@@ -309,55 +340,63 @@ if (!isset($page_description)) {
                 });
             });
         }
-        // Video autoplay handling (homepage)
+        
+        // Video autoplay handling (homepage only)
         const video = document.querySelector('.hero-video');
         if (video) {
             video.addEventListener('loadedmetadata', function() {
                 video.setAttribute('data-loaded', 'true');
             });
+            
             const playPromise = video.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.log('Autoplay prevented or failed:', error);
-                    // Optional: Hide video or show fallback image if autoplay fails
-                    // video.style.display = 'none';
                 });
             }
         }
-    }); 
-
-</script>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const videos = document.querySelectorAll('video[data-src]');
-    
-    const videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const video = entry.target;
-          const source = video.querySelector('source');
-          source.src = source.getAttribute('data-src');
-          video.load();
-          videoObserver.unobserve(video);
+        
+        // Lazy loading for videos
+        const videos = document.querySelectorAll('video[data-src]');
+        if (videos.length > 0) {
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const video = entry.target;
+                        const source = video.querySelector('source');
+                        if (source && source.getAttribute('data-src')) {
+                            source.src = source.getAttribute('data-src');
+                            video.load();
+                            videoObserver.unobserve(video);
+                        }
+                    }
+                });
+            });
+            
+            videos.forEach(video => {
+                videoObserver.observe(video);
+            });
         }
-      });
     });
-    
-    videos.forEach(video => {
-      videoObserver.observe(video);
-    });
-  });
-
     </script>
 </head>
 <body>
+    <!-- Depanare - comentariu HTML cu informații utile (șterge în producție) -->
+    <!-- 
+        Pagină curentă: <?= $current_page ?>
+        URL de bază: <?= $base_url ?>
+        Cale resurse: <?= $assets_path ?>
+        Este homepage: <?= $is_home ? 'Da' : 'Nu' ?>
+        CSS specific paginii: <?= $page_specific_css ?>
+    -->
+    
     <header class="header">
         <div class="container">
-            <!-- Logo compus dintr-o imagine -->
+            <!-- Logo -->
             <a href="<?= $base_url ?>" class="logo">
                 <img src="<?= $assets_path ?>img/logo-text.jpg" alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" class="logo-text" width="200" height="50">
             </a>
+            
             <!-- Meniu Desktop -->
             <nav class="nav-desktop" aria-label="Hauptnavigation">
                 <ul>
@@ -368,12 +407,14 @@ if (!isset($page_description)) {
                     <li><a href="<?= $base_url ?>contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?> cta-button">Kontakt</a></li>
                 </ul>
             </nav>
+            
             <!-- Meniu Mobil -->
             <button class="hamburger mobile-nav" aria-label="Deschide meniul" aria-controls="nav-mobile" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
+            
             <nav class="nav-mobile" id="nav-mobile">
                 <ul>
                     <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
@@ -385,6 +426,8 @@ if (!isset($page_description)) {
             </nav>
         </div>
     </header>
+    
     <!-- Mobile overlay -->
     <div class="mobile-overlay"></div>
+    
     <main>
