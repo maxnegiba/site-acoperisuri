@@ -2333,3 +2333,18 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     outline: 3px solid rgba(193, 39, 45, 0.5);
     outline-offset: 2px;
 }
+}
+/* ADAUGĂ la sfârșitul fișierului main.css */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 70vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-content h2 {
+    font-size: 1.4rem;
+  }
+}

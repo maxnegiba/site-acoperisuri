@@ -22,24 +22,32 @@ if (!isset($page_description)) {
     $page_description = 'Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg. Über 20 Jahre Erfahrung. Kostenlose Beratung & Angebot!';
 }
 
-// Funcție pentru a determina calea către CSS-ul specific paginii
-function getPageSpecificCSS($current_page, $assets_path, $is_home) {
-    if ($is_home) {
-        return $assets_path . 'css/main.css';
+// Funcție pentru a determina toate fișierele CSS necesare
+function getRequiredCSSFiles($current_page, $assets_path, $is_home) {
+    $css_files = [];
+    
+    // Întotdeauna încarcă main.css pentru toate paginile
+    $css_files[] = $assets_path . 'css/main.css';
+    
+    // Pentru paginile non-homepage, adaugă și CSS-ul specific
+    if (!$is_home) {
+        $page_specific_css = [
+            'contact.php' => $assets_path . 'css/contact.css',
+            'services.php' => $assets_path . 'css/services.css',
+            'projects.php' => $assets_path . 'css/projects.css',
+            'about.php' => $assets_path . 'css/about.css'
+        ];
+        
+        if (isset($page_specific_css[$current_page])) {
+            $css_files[] = $page_specific_css[$current_page];
+        }
     }
     
-    $css_files = [
-        'contact.php' => $assets_path . 'css/contact.css',
-        'services.php' => $assets_path . 'css/services.css',
-        'projects.php' => $assets_path . 'css/projects.css',
-        'about.php' => $assets_path . 'css/about.css'
-    ];
-    
-    return isset($css_files[$current_page]) ? $css_files[$current_page] : $assets_path . 'css/main.css';
+    return $css_files;
 }
 
-// Determină calea către CSS-ul specific paginii curente
-$page_specific_css = getPageSpecificCSS($current_page, $assets_path, $is_home);
+// Obține toate fișierele CSS necesare
+$required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home);
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -223,9 +231,11 @@ $page_specific_css = getPageSpecificCSS($current_page, $assets_path, $is_home);
         }
     </style>
     
-    <!-- Încărcare CSS specific paginii -->
-    <link rel="preload" href="<?= $page_specific_css ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $page_specific_css ?>"></noscript>
+    <!-- Încărcare CSS pentru toate paginile -->
+    <?php foreach ($required_css_files as $css_file): ?>
+        <link rel="preload" href="<?= $css_file ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="<?= $css_file ?>"></noscript>
+    <?php endforeach; ?>
     
     <!-- External libraries - încărcare asincronă -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -387,7 +397,7 @@ $page_specific_css = getPageSpecificCSS($current_page, $assets_path, $is_home);
         URL de bază: <?= $base_url ?>
         Cale resurse: <?= $assets_path ?>
         Este homepage: <?= $is_home ? 'Da' : 'Nu' ?>
-        CSS specific paginii: <?= $page_specific_css ?>
+        Fișiere CSS încărcate: <?= implode(', ', $required_css_files) ?>
     -->
     
     <header class="header">
