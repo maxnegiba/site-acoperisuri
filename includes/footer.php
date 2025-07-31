@@ -27,7 +27,7 @@
 
 <!-- Floating Buttons -->
 <div class="floating-buttons">
-    <button class="main-button"><i class="fas fa-phone"></i></button>
+    <button class="quick-contact-button"><i class="fas fa-phone"></i></button>
     <div class="sub-buttons">
         <a href="tel:+491626781242" class="sub-button"><i class="fas fa-phone"></i></a>
         <a href="https://wa.me/491626781242" class="sub-button"><i class="fab fa-whatsapp"></i></a>

@@ -876,7 +876,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
   z-index: 1000;
 }
 
-.main-button {
+.quick-contact-button {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -891,7 +891,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
   z-index: 1001;
 }
 
-.main-button:hover {
+.quick-contact-button:hover {
   background-color: #2980b9;
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(52, 152, 219, 0.6);
@@ -1125,7 +1125,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     bottom: 20px;
     right: 20px;
   }
-  .main-button {
+  .quick-contact-button {
     width: 55px;
     height: 55px;
     font-size: 20px;
