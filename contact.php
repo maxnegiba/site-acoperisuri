@@ -178,8 +178,10 @@ if (!$open): ?>
 </div>
 <?php endif; ?>
 
-<!-- ===== MICRO-CONVERSII ===== -->
-<section class="extras">
+<link rel="preload" href="<?= $assets_path ?>css/components/footer.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/footer.css"></noscript>
+    <!-- Sfârșit adăugare pentru footer -->
+    <!-- <section class="extras">
   <div class="container grid-2">
     <div class="download-box">
       <h3>PDF-Katalog</h3>
@@ -195,7 +197,8 @@ if (!$open): ?>
       </form>
     </div>
   </div>
-</section>
+</section> -->
+
 
 <!-- ===== SCRIPTS ===== -->
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfd6IwrAAAAAAq9AnqQDYHssazEzrcAQaCfQLDj"></script>
