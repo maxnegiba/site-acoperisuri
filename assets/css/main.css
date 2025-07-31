@@ -775,6 +775,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     width: 90%;
     padding: 2rem;
     color: white;
+    min-height: 400px;
 }
 
 .hero-content h1 {
@@ -801,6 +802,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     animation: fadeInUp 1s ease-out 0.4s forwards;
     opacity: 0;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    min-height: 2em;
 }
 
 .trust-badges {

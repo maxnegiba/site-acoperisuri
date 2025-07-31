@@ -604,11 +604,7 @@ const preload = (href, as = 'image') => {
   document.head.appendChild(l);
 };
 
-/* Preload first video poster & fonts */
-document.addEventListener('DOMContentLoaded', () => {
-  preload(`${CONFIG.rootPath}assets/video/projects/project1-poster.webp`);
-  preload('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap', 'style');
-});
+
 
 swiper.on('slideChange', function () {
   const bullets = document.querySelectorAll('.swiper-pagination-bullet');
