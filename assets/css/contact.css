@@ -1,6 +1,5 @@
 /* ===== CONTACT PAGE STYLES ===== */
-@import url('base/variables.css');
-@import url('base/animations.css');
+
 /* Hero Section - Small variant */
 .hero--small {
     height: 60vh;

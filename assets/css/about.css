@@ -1,5 +1,4 @@
-@import url('base/variables.css');
-@import url('base/animations.css');
+
 .about-hero {
     background-image: url('../img/storm-damage.jpg');
     background-size: cover;
