@@ -343,12 +343,12 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
 }
 
 .logo-text {
-    height: 100%;
-    width: auto;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
-    transition: all 0.3s ease;
+  width: 200px !important;
+  height: 50px !important;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
 }
-
 .logo:hover {
     transform: scale(1.05);
 }
@@ -489,24 +489,24 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     }
 
     .hamburger {
-        position: relative;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border: 2px solid rgba(211, 47, 47, 0.1);
-        border-radius: 12px;
-        padding: 10px;
-        width: 44px;
-        height: 44px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-         min-width: 44px;
+       hamburger {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(211, 47, 47, 0.1);
+  border-radius: 12px;
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  min-width: 44px;
   min-height: 44px;
-  visibility: hidden;
-    }
+}
 
     .hamburger span {
         position: absolute;
