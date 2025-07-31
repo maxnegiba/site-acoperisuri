@@ -324,7 +324,31 @@ if (!isset($page_description)) {
                 });
             }
         }
+    }); 
+
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const videos = document.querySelectorAll('video[data-src]');
+    
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const video = entry.target;
+          const source = video.querySelector('source');
+          source.src = source.getAttribute('data-src');
+          video.load();
+          videoObserver.unobserve(video);
+        }
+      });
     });
+    
+    videos.forEach(video => {
+      videoObserver.observe(video);
+    });
+  });
+
     </script>
 </head>
 <body>
