@@ -178,8 +178,7 @@ if (!$open): ?>
 </div>
 <?php endif; ?>
 
-<link rel="preload" href="<?= $assets_path ?>css/components/footer.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/components/footer.css"></noscript>
+
     <!-- Sfârșit adăugare pentru footer -->
     <!-- <section class="extras">
   <div class="container grid-2">

@@ -32,7 +32,7 @@ function getPageSpecificCSS($current_page, $assets_path, $is_home) {
         'contact.php' => $assets_path . 'css/contact.css',
         'services.php' => $assets_path . 'css/services.css',
         'projects.php' => $assets_path . 'css/projects.css',
-        'about.php' => $assets_path . 'css/about.php'
+        'about.php' => $assets_path . 'css/about.css'
     ];
     
     return isset($css_files[$current_page]) ? $css_files[$current_page] : $assets_path . 'css/main.css';
