@@ -12,15 +12,21 @@ include(__DIR__ . '/includes/header.php');
 
 <!-- HERO SECTION -->
 <section class="hero-section">
-    <video class="hero-video"
-           autoplay
-           muted
-           loop
-           playsinline
-           preload="metadata"
-           >
-        <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
-    </video>
+    <div class="hero-video-container">
+        <div class="video-placeholder" style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"></div>
+        <video class="hero-video"
+               poster="<?= $assets_path ?>img/hero-placeholder.jpg"
+               autoplay
+               muted
+               loop
+               playsinline
+               preload="metadata"
+               style="opacity: 0;"
+               >
+            <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
+        </video>
+    </div>
+    <!-- Overlay -->
     <!-- Overlay -->
     <div class="hero-overlay"></div>
     <!-- Content -->
