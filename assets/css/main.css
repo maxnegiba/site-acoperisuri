@@ -1200,9 +1200,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
   .hero {
     min-height: 400px; /* Further adjusted for small screens */
   }
-  .hero-content h1 {
-     font-size: clamp(1.8rem, 7vw, 2.5rem); /* Adjusted clamp */
-  }
+  
   .hero-content h2 {
      font-size: clamp(1.1rem, 5vw, 1.7rem); /* Adjusted clamp */
   }
