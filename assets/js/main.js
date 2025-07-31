@@ -180,17 +180,17 @@ class CinematicCarousel {
       },
       
       // Pagination
-      pagination: {
+  // Replace the pagination configuration with this complete version
+pagination: {
     el: '.swiper-pagination',
     clickable: true,
-    bulletElement: 'button', // Schimbă elementul implicit de la span la button
+    bulletElement: 'button',
     bulletClass: 'swiper-pagination-bullet',
     bulletActiveClass: 'swiper-pagination-bullet-active',
     renderBullet: function (index, className) {
-      // Generează butoane cu atribute ARIA corecte
-      return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
+        return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
     }
-  },
+},
   
       
       // Keyboard navigation
