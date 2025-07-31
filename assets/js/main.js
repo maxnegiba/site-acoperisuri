@@ -174,12 +174,17 @@ class CinematicCarousel {
       
       // Pagination
       pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-        renderBullet: (index, className) => {
-          return `<span class="${className}" aria-label="Slide ${index + 1}"></span>`;
-        },
-      },
+    el: '.swiper-pagination',
+    clickable: true,
+    bulletElement: 'button', // Schimbă elementul implicit de la span la button
+    bulletClass: 'swiper-pagination-bullet',
+    bulletActiveClass: 'swiper-pagination-bullet-active',
+    renderBullet: function (index, className) {
+      // Generează butoane cu atribute ARIA corecte
+      return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
+    }
+  },
+  
       
       // Keyboard navigation
       keyboard: {
@@ -605,5 +610,14 @@ document.addEventListener('DOMContentLoaded', () => {
   preload('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap', 'style');
 });
 
-
+swiper.on('slideChange', function () {
+  const bullets = document.querySelectorAll('.swiper-pagination-bullet');
+  bullets.forEach((bullet, index) => {
+    if (index === swiper.activeIndex) {
+      bullet.setAttribute('aria-current', 'true');
+    } else {
+      bullet.removeAttribute('aria-current');
+    }
+  });
+});
 

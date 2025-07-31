@@ -1241,3 +1241,30 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
   font-display: swap;
   src: url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap);
 }
+
+.swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+  border: none;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.swiper-pagination-bullet:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.swiper-pagination-bullet-active {
+  background: #fff;
+  transform: scale(1.2);
+}
+
+/* Elimină stilurile implicite pentru butoane */
+.swiper-pagination-bullet:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
