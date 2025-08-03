@@ -77,6 +77,23 @@ section {
    RESET & BASE STYLES
    ========================================================================== */
 
+/* Previne schimbarea automată a dimensiunii h1 în secțiuni */
+section h1, 
+article h1, 
+aside h1, 
+nav h1 {
+    font-size: 2.5rem !important; /* Dimensiune explicită */
+}
+
+@media (max-width: 768px) {
+    section h1, 
+    article h1, 
+    aside h1, 
+    nav h1 {
+        font-size: 2rem !important;
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -101,14 +118,18 @@ body {
     flex-direction: column;
 }
 
-/* Corectare pentru header */
+/* Pentru header, setează înălțime fixă */
 .header {
-    /* ... proprietățile existente ... */
-    /* Adaugă aceste proprietăți */
-    contain: layout style paint;
-    will-change: transform;
+  /* ... proprietățile existente ... */
+  height: 100px; /* Înălțime fixă în loc de var() */
+  contain: layout style paint;
 }
 
+@media (max-width: 768px) {
+  .header {
+    height: 80px; /* Înălțime fixă pentru mobil */
+  }
+}
 /* Asigură-te că main-ul începe sub header */
 main {
     flex: 1;
@@ -783,16 +804,16 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
 
 .hero-section {
   position: relative;
-  min-height: 100vh;
+  height: 100vh; /* Înlocuiește min-height cu height fix */
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding-top: var(--header-height); /* Compensare pentru header */
-  box-sizing: border-box;
-  background: #000; /* Fallback pentru video */
+  background: #000;
+  /* Elimină padding-top dinamic */
 }
 
+/* Adaugă aspect-ratio pentru video container */
 .hero-video {
   position: absolute;
   top: 0;
@@ -801,6 +822,9 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
   height: 100%;
   object-fit: cover;
   z-index: var(--z-hero-video);
+  /* Adaugă pentru a preveni layout shift */
+  aspect-ratio: 16/9;
+  background-color: #000;
 }
 
 .hero-overlay {

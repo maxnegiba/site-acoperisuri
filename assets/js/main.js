@@ -73,48 +73,9 @@ function updateHeaderState() {
 }
 window.addEventListener('scroll', debounce(updateHeaderState, 50));
 
-/* Adjust hero padding when header resizes */
-function syncHeroPadding() {
-    if (!heroSection || !header) return;
-    
-    requestAnimationFrame(() => {
-        const headerHeight = header.offsetHeight;
-        
-        // Aplică toate schimbările deodată
-        const heroStyles = {
-            paddingTop: `${headerHeight}px`,
-            marginTop: `-${headerHeight}px`,
-            minHeight: `calc(100vh - ${headerHeight}px)`
-        };
-        
-        Object.assign(heroSection.style, heroStyles);
-        
-        const videoContainer = heroSection.querySelector('.hero-video-container');
-        if (videoContainer) {
-            const containerStyles = {
-                minHeight: `calc(100vh - ${headerHeight}px)`,
-                maxHeight: `calc(100vh - ${headerHeight}px)`
-            };
-            Object.assign(videoContainer.style, containerStyles);
-        }
-        
-        const overlay = heroSection.querySelector('.hero-overlay');
-        if (overlay) {
-            const overlayStyles = {
-                minHeight: `calc(100vh - ${headerHeight}px)`,
-                maxHeight: `calc(100vh - ${headerHeight}px)`
-            };
-            Object.assign(overlay.style, overlayStyles);
-        }
-    });
-}
 
-// Apelează syncHeroPadding la încărcare și resize
-window.addEventListener('resize', debounce(syncHeroPadding));
-document.addEventListener('DOMContentLoaded', syncHeroPadding);
 
-// Apelează și după ce header-ul este complet încărcat
-window.addEventListener('load', syncHeroPadding);
+
 /* ---------------------------------------------------------
    3.  HERO VIDEO LAZY-LOAD & AUTOPLAY
 --------------------------------------------------------- */
@@ -262,105 +223,51 @@ class CinematicCarousel {
     });
   }
 
-  initializeSwiper() {
+// Înlocuiește initializeSwiper cu versiune optimizată
+initializeSwiper() {
     const swiperElement = document.querySelector('.videoProjectsSwiper');
+    if (!swiperElement) return;
     
-    // Use requestAnimationFrame to prevent forced sync layouts
-    requestAnimationFrame(() => {
-        // Measure layout properties before any DOM changes
-        const containerWidth = swiperElement.offsetWidth;
-        const containerHeight = swiperElement.offsetHeight;
+    // Folosește will-change pentru a pregăti browserul
+    swiperElement.style.willChange = 'transform';
+    
+    // Inițializează Swiper fără măsurători inutile
+    this.swiper = new Swiper(swiperElement, {
+        loop: true,
+        effect: 'fade',
+        speed: 1200,
+        grabCursor: true,
         
-        // Create a document fragment to minimize reflows
-        const fragment = document.createDocumentFragment();
+        // Dezactivează funcțiile care cauzează reflow
+        observer: false,
+        observeParents: false,
+        observeSlideChildren: false,
         
-        // Initialize Swiper with optimized settings
-        this.swiper = new Swiper(swiperElement, {
-            // Core settings
-            loop: true,
-            effect: 'fade',
-            speed: 1200,
-            grabCursor: true,
-            watchSlidesProgress: true,
-            
-            // Autoplay configuration
-            autoplay: {
-                delay: CONFIG?.autoplayDelay || 6000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-            },
-            
-            // Navigation
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            
-            // Pagination
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-                bulletElement: 'button',
-                bulletClass: 'swiper-pagination-bullet',
-                bulletActiveClass: 'swiper-pagination-bullet-active',
-                renderBullet: function (index, className) {
-                    return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
-                }
-            },
-            
-            // Keyboard navigation
-            keyboard: {
-                enabled: true,
-                onlyInViewport: true,
-            },
-            
-            // Accessibility
-            a11y: {
-                prevSlideMessage: 'Proiectul anterior',
-                nextSlideMessage: 'Următorul proiect',
-                firstSlideMessage: 'Acesta este primul slide',
-                lastSlideMessage: 'Acesta este ultimul slide',
-            },
-            
-            // Fade effect settings
-            fadeEffect: {
-                crossFade: true,
-            },
-            
-            // Event callbacks - wrap in requestAnimationFrame
-            on: {
-                init: (swiper) => {
-                    requestAnimationFrame(() => {
-                        this.onSwiperInit(swiper);
-                    });
-                },
-                slideChange: (swiper) => {
-                    requestAnimationFrame(() => {
-                        this.onSlideChange(swiper);
-                    });
-                },
-                autoplayTimeLeft: (swiper, time, progress) => {
-                    requestAnimationFrame(() => {
-                        this.updateAutoplayProgress(progress);
-                    });
-                },
-                autoplayStart: () => {
-                    this.onAutoplayStart();
-                },
-                autoplayStop: () => {
-                    this.onAutoplayStop();
-                },
-                touchStart: () => {
-                    this.pauseAllVideos();
-                },
-                touchEnd: () => {
-                    this.playActiveVideo();
-                },
-            },
-        });
+        autoplay: {
+            delay: 6000,
+            disableOnInteraction: false,
+        },
         
-        this.isInitialized = true;
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        
+        on: {
+            init: () => this.onSwiperInit(),
+            slideChange: () => this.onSlideChange(),
+        },
     });
+    
+    // Elimină will-change după inițializare
+    setTimeout(() => {
+        swiperElement.style.willChange = 'auto';
+    }, 1000);
 }
 
 

@@ -273,7 +273,7 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
     <!-- JavaScript - încărcare deferred -->
     <script src="<?= $assets_path ?>js/main.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer crossorigin></script>
-   
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.5/dist/js/lightbox.min.js" defer crossorigin></script>
 
 <script>
@@ -326,15 +326,14 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
 <a href="<?= $base_url ?>" class="logo">
     <picture>
         <source srcset="<?= $assets_path ?>img/logo-text.webp" type="image/webp">
-        <img src="<?= $assets_path ?>img/logo-text.jpg" 
-             alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
-             class="logo-text" 
-             width="200" 
-             height="50"
-             loading="eager"
-             fetchpriority="high"
-             style="width: 200px; height: 50px;">
-    </picture>
+        <img src="<?= $assets_path ?>img/logo-text-optimized.webp" 
+         alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
+         class="logo-text" 
+         width="200" 
+         height="50"
+         loading="eager"
+         decoding="async"
+         style="width: 200px; height: 50px; contain: layout;">
 </a>
             
             <!-- Meniu Desktop -->
