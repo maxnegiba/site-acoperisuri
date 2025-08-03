@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $request_uri = $_SERVER['REQUEST_URI'];
 $is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
 
-// Asigură că $page_title și $page_description sunt definite pentru fiecare pagină
+// Asigură-te că $page_title și $page_description sunt definite pentru fiecare pagină
 if (!isset($page_title)) {
     $page_title = 'MeisterDach - Dachdecker Meisterbetrieb';
 }
@@ -25,11 +25,7 @@ if (!isset($page_description)) {
 // Funcție pentru a determina toate fișierele CSS necesare
 function getRequiredCSSFiles($current_page, $assets_path, $is_home) {
     $css_files = [];
-    
-    // Întotdeauna încarcă main.css pentru toate paginile
-    $css_files[] = $assets_path . 'css/main.css';
-    
-    // Pentru paginile non-homepage, adaugă și CSS-ul specific
+    $css_files[] = $assets_path . 'css/main.css'; // Întotdeauna încarcă main.css
     if (!$is_home) {
         $page_specific_css = [
             'contact.php' => $assets_path . 'css/contact.css',
@@ -37,17 +33,21 @@ function getRequiredCSSFiles($current_page, $assets_path, $is_home) {
             'projects.php' => $assets_path . 'css/projects.css',
             'about.php' => $assets_path . 'css/about.css'
         ];
-        
         if (isset($page_specific_css[$current_page])) {
             $css_files[] = $page_specific_css[$current_page];
         }
     }
-    
     return $css_files;
 }
 
-// Obține toate fișierele CSS necesare
 $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home);
+
+// Adaugă headere de securitate și cache (rezolvă problemele de securitate și cache din insights)
+header("Content-Security-Policy: default-src 'self'; script-src 'self' $assets_path; style-src 'self' $assets_path; img-src 'self' data: $assets_path; media-src 'self' $assets_path; font-src 'self' $assets_path; require-trusted-types-for 'script';");
+header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+header("Cross-Origin-Opener-Policy: same-origin");
+header("X-Frame-Options: SAMEORIGIN");
+header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse statice
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -57,32 +57,19 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
     
-    <!-- Preload resurse critice pentru afișarea inițială -->
+    <!-- Preload resurse critice pentru afișarea inițială (reduce LCP) -->
     <?php if ($is_home): ?>
         <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
     <?php endif; ?>
-    <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
-    <!-- Adaugă în head -->
-<link rel="preload" href="<?= $assets_path ?>img/hero-placeholder.jpg" as="image" fetchpriority="high">
-<!-- În header.php -->
-<!-- Adaugă în header.php -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
-<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js" defer></script>
-<script>
-    // Încărcare resurse critice
-    function loadScript(src, async = true, defer = true) {
-        const script = document.createElement('script');
-        script.src = src;
-        if (async) script.async = true;
-        if (defer) script.defer = true;
-        document.head.appendChild(script);
-    }
+    <link rel="preload" href="<?= $assets_path ?>img/logo-text.webp" as="image" fetchpriority="high">
+    <link rel="preload" href="<?= $assets_path ?>img/team-hero.webp" as="image" fetchpriority="high">
+    <link rel="preload" href="<?= $assets_path ?>img/loading.gif" as="image" fetchpriority="high"> <!-- Pentru lightbox, dacă folosit -->
     
-    // Încarcă Swiper doar când este necesar
-    if (document.querySelector('.videoProjectsSwiper')) {
-        loadScript('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js');
-    }
-</script>
+    <!-- Preload fonturi critice (reduce render delay în LCP) -->
+    <link rel="preload" href="<?= $assets_path ?>fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<?= $assets_path ?>fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- CSS Critic Inline pentru Header (prevenire FOUC și CLS) -->
     <style>
         /* === CRITICAL HEADER STYLES - INLINE === */
         .header {
@@ -99,6 +86,7 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
             height: 100px;
             padding: 0;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            contain: layout; /* Previne CLS */
         }
         
         .header .container {
@@ -248,65 +236,54 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
             .header { position: static; box-shadow: none; background: white; }
             .nav-desktop a, .nav-mobile a { color: black !important; }
         }
+        
+        /* Adaugă pentru a rezolva avertismentul h1 */
+        section h1, article h1, aside h1, nav h1 { font-size: 2em; }
     </style>
     
-    <!-- Încărcare CSS pentru toate paginile -->
+    <!-- Încărcare CSS pentru toate paginile (local, preload) -->
     <?php foreach ($required_css_files as $css_file): ?>
         <link rel="preload" href="<?= $css_file ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="<?= $css_file ?>"></noscript>
     <?php endforeach; ?>
-    <!-- Preload critical fonts -->
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
-    <!-- External libraries - încărcare asincronă -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.5/css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
-<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.5/css/lightbox.min.css"></noscript>
-
-
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+    <!-- External libraries - local și preload (reduce terțe părți) -->
+    <link rel="preload" href="<?= $assets_path ?>css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/all.min.css"></noscript>
     
-    <!-- JavaScript - încărcare deferred -->
+    <link rel="preload" href="<?= $assets_path ?>css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/lightbox.min.css"></noscript>
+    
+    <link rel="preload" href="<?= $assets_path ?>css/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/swiper-bundle.min.css"></noscript>
+    
+    <!-- JavaScript - local și defer -->
     <script src="<?= $assets_path ?>js/main.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer crossorigin></script>
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.5/dist/js/lightbox.min.js" defer crossorigin></script>
-
-<script>
-/* Hero-video fade-in fix */
-(function () {
-    const container   = document.getElementById('hero-video-container');
-    const video       = document.getElementById('hero-video');
-
-    if (!container || !video) {
-        /* Gracefully abort if the markup isn’t present */
-        return;
-    }
-
-    /* When the video is ready to play, fade it in */
-    const onCanPlay = () => {
-        video.setAttribute('data-loaded', 'true');          // triggers CSS opacity
-        container.classList.add('video-loaded');            // hides fallback img
-        video.style.opacity = '1';                          // extra safety
-    };
-
-    /* Events that signal the video is ready */
-    if (video.readyState >= 2) {
-        onCanPlay();                                        // already loaded
-    } else {
-        video.addEventListener('loadeddata', onCanPlay);    // loaded later
-        video.addEventListener('canplay', onCanPlay);       // fallback
-    }
-
-    /* Extra: if the video fails, leave the placeholder visible */
-    video.addEventListener('error', () => {
-        container.classList.remove('video-loaded');
-    });
-})();
-</script>
+    <script src="<?= $assets_path ?>js/swiper-bundle.min.js" defer></script>
+    <script src="<?= $assets_path ?>js/lightbox.min.js" defer></script>
+    
+    <!-- Script inline pentru hero-video fade-in (din codul tău original) -->
+    <script>
+        (function () {
+            const container = document.getElementById('hero-video-container');
+            const video = document.getElementById('hero-video');
+            if (!container || !video) return;
+            const onCanPlay = () => {
+                video.setAttribute('data-loaded', 'true');
+                container.classList.add('video-loaded');
+                video.style.opacity = '1';
+            };
+            if (video.readyState >= 2) {
+                onCanPlay();
+            } else {
+                video.addEventListener('loadeddata', onCanPlay);
+                video.addEventListener('canplay', onCanPlay);
+            }
+            video.addEventListener('error', () => {
+                container.classList.remove('video-loaded');
+            });
+        })();
+    </script>
 </head>
 <body>
     <!-- Depanare - comentariu HTML cu informații utile (șterge în producție) -->
@@ -321,19 +298,19 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
     <header class="header">
         <div class="container">
             <!-- Logo -->
-            <!-- Înlocuiește logo-ul existent cu: -->
-<a href="<?= $base_url ?>" class="logo">
-    <picture>
-        <source srcset="<?= $assets_path ?>img/logo-text.webp" type="image/webp">
-        <img src="<?= $assets_path ?>img/logo-text-optimized.webp" 
-         alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
-         class="logo-text" 
-         width="200" 
-         height="50"
-         loading="eager"
-         decoding="async"
-         style="width: 200px; height: 50px; contain: layout;">
-</a>
+            <a href="<?= $base_url ?>" class="logo">
+                <picture>
+                    <source srcset="<?= $assets_path ?>img/logo-text.webp" type="image/webp">
+                    <img src="<?= $assets_path ?>img/logo-text.jpg" 
+                         alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
+                         class="logo-text" 
+                         width="200" 
+                         height="50"
+                         loading="eager"
+                         fetchpriority="high"
+                         style="width: 200px; height: 50px;">
+                </picture>
+            </a>
             
             <!-- Meniu Desktop -->
             <nav class="nav-desktop" aria-label="Hauptnavigation">
