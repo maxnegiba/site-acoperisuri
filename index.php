@@ -12,21 +12,16 @@ include(__DIR__ . '/includes/header.php');
 
 <!-- HERO SECTION -->
 <section class="hero-section">
-    <div class="hero-video-container">
-        <div class="video-placeholder" style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"></div>
-        <video class="hero-video"
-               poster="<?= $assets_path ?>img/hero-placeholder.jpg"
-               autoplay
-               muted
-               loop
-               playsinline
-               preload="metadata"
-               style="opacity: 0;"
-               >
-            <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
-        </video>
-    </div>
-    <!-- Overlay -->
+    <video class="hero-video"
+           autoplay
+           muted
+           loop
+           playsinline
+           preload="metadata"
+           poster="<?= $assets_path ?>images/hero-video.webp">
+        <source src="<?= $assets_path ?>video/hero-video.webm" type="video/webm">
+        <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
+    </video>
     <!-- Overlay -->
     <div class="hero-overlay"></div>
     <!-- Content -->
@@ -34,10 +29,10 @@ include(__DIR__ . '/includes/header.php');
         <h1>Herzlich Willkommen bei Der Hausmeister Michael GmbH</h1>
         <h2>Wir schützen Ihr Eigentum im Neubau und Bestand durch das traditionelle Dachdeckerhandwerk.</h2>
         <p>
-            Sind wir Ihr richtiger Ansprechpartner?<br>
+            Sind wir Ihr richtiger Ansprechpartner?<br> <!-- Corectat punctuația -->
             Unser Ziel ist es, Ihre Wünsche umzusetzen!<br>
             Im Laufe der Zeit muss ein Dach Regen, Sturm, Schnee und Hitze standhalten. Eine optimale Dachkonstruktion bietet dabei den notwendigen Schutz. Überlassen Sie die Qualität der Bedachung nicht dem Zufall, sondern kompetenten Fachkräften.<br>
-            Wir von der Dachdeckerei Michael sind sowohl für Privatkunden als auch für Unternehmen, Architekten und öffentliche Auftraggeber (Bund, Länder und Gemeinden) ein kompetenter Ansprechpartner für Bedachungen aller Art. Und mit Erfolg sind wir für zahlreiche Kunden im Raum <strong>Berlin, Brandenburg, Potsdam und Frankfurt (Oder)</strong> tätig.<br>
+            Wir von der Dachdeckerei Michael sind sowohl für Privatkunden als auch für Unternehmen, Architekten und öffentliche Auftraggeber (Bund, Länder und Gemeinden) ein kompetenter Ansprechpartner für Bedachungen aller Art. Und mit Erfolg sind wir für zahlreiche Kunden im Raum <strong>Berlin, Brandenburg, Potsdam und Frankfurt (Oder)</strong> tätig.<br> <!-- Integrează locațiile și cuvintele cheie -->
             <strong>Dachdecker in Berlin & Brandenburg</strong> - von der kleinsten Dachreparatur bis zur kompletten Dacheindeckung.
             <br><strong>Über 20 Jahre Erfahrung.</strong>
             <br>Bund, Länder, Gemeinden & Privatkunden vertrauen uns.
@@ -46,7 +41,7 @@ include(__DIR__ . '/includes/header.php');
         <!-- Trust Badges -->
         <div class="trust-badges">
             <span>🏆 20+ Jahre Meisterbetrieb</span>
-            <span>📍 Berlin · Potsdam · Frankfurt (Oder)</span>
+            <span>📍 Berlin · Potsdam · Frankfurt (Oder)</span> <!-- Acestea sunt deja bune pentru local SEO -->
             <span>✅ Zertifiziert für öffentliche Aufträge</span>
         </div>
     </div>
