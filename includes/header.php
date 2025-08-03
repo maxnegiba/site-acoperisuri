@@ -65,10 +65,9 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
     <!-- Adaugă în head -->
 <link rel="preload" href="<?= $assets_path ?>img/hero-placeholder.jpg" as="image" fetchpriority="high">
 <!-- În header.php -->
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
-    <!-- CSS Critic Inline pentru Header - Asigură afișarea corectă fără FOUC -->
-     <!-- În header.php -->
+<!-- Adaugă în header.php -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js" defer></script>
 <script>
     // Încărcare resurse critice
     function loadScript(src, async = true, defer = true) {
