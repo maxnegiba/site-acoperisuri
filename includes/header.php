@@ -7,411 +7,207 @@ $assets_path = $base_url . 'assets/';
 
 // Determină pagina curentă pentru meniul activ
 $current_page = basename($_SERVER['PHP_SELF']);
-$request_uri = $_SERVER['REQUEST_URI'];
-$is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
+$is_home = in_array($current_page, ['index.php', '']);
 
-// Asigură că $page_title și $page_description sunt definite
-if (!isset($page_title)) {
-    $page_title = 'MeisterDach - Dachdecker Meisterbetrieb';
-}
-if (!isset($page_description)) {
-    $page_description = 'Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg. Über 20 Jahre Erfahrung. Kostenlose Beratung & Angebot!';
-}
-
-// Funcție pentru a determina toate fișierele CSS necesare
-function getRequiredCSSFiles($current_page, $assets_path, $is_home) {
-    $css_files = [];
-    
-    // Întotdeauna încarcă main.css pentru toate paginile
-    $css_files[] = $assets_path . 'css/main.css';
-    
-    // Pentru paginile non-homepage, adaugă și CSS-ul specific
-    if (!$is_home) {
-        $page_specific_css = [
-            'contact.php' => $assets_path . 'css/contact.css',
-            'services.php' => $assets_path . 'css/services.css',
-            'projects.php' => $assets_path . 'css/projects.css',
-            'about.php' => $assets_path . 'css/about.css'
-        ];
-        
-        if (isset($page_specific_css[$current_page])) {
-            $css_files[] = $page_specific_css[$current_page];
-        }
-    }
-    
-    return $css_files;
-}
-
-// Obține toate fișierele CSS necesare
-$required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home);
+// CSS-uri necesare
+$required_css_files = [
+    $assets_path . 'css/main.css',
+    'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'
+];
 ?>
+
 <!DOCTYPE html>
-<html lang="de">
+<html lang="ro">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
-    <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
-    
-    <!-- DNS Prefetch și Preconnect pentru optimizare -->
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    
-    <!-- Preload resurse critice -->
+    <title>MeisterDach - Acoperișuri de înaltă calitate</title>
+    <meta name="description" content="Servicii profesionale de acoperișuri, reparații și întreținere. Lucrăm cu precizie și tradiție germană.">
+
+    <!-- Preload fonturi critice -->
+    <link rel="preload" href="<?= $assets_path ?>webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<?= $assets_path ?>webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Preload CSS critice -->
     <link rel="preload" href="<?= $assets_path ?>css/main.css" as="style">
-    <link rel="preload" href="<?= $assets_path ?>img/logo-text-optimized.webp" as="image" fetchpriority="high">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-    
-    <?php if ($is_home): ?>
-    <!-- Preload pentru homepage -->
-    <link rel="preload" href="<?= $assets_path ?>img/hero-poster.jpg" as="image" fetchpriority="high">
-    <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
-    <?php endif; ?>
-    
-    <!-- CSS Critic Inline pentru eliminarea FOUC -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style">
+
+    <!-- CSS Critic Inline pentru Header (evită FOUC) -->
     <style>
-        /* === CRITICAL CSS === */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            margin: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #2c3e50;
-            background: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Header Critical Styles */
+        /* === CRITICAL HEADER STYLES === */
         .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: var(--z-header);
+            height: var(--header-height);
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.95));
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             border-bottom: 1px solid rgba(211, 47, 47, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1010;
-            height: 100px;
-            padding: 0;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            will-change: transform;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             contain: layout style paint;
+            will-change: transform;
         }
-        
         .header.scrolled {
-            transform: translateY(-5px);
+            height: 80px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        
         .header .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: var(--max-container-width);
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 100%;
             padding: 0 32px;
-            position: relative;
         }
-        
-        /* Logo Critical */
-        .logo {
-            display: flex;
-            align-items: center;
-            height: 100%;
-            text-decoration: none;
-            padding: 0;
-            z-index: 1011;
-            transition: transform 0.3s ease;
-            gap: 8px;
-            margin-right: auto;
+        .logo-main, .logo-text {
+            height: 60px;
+            transition: height 0.3s ease;
         }
-        
-        .logo-text {
-            width: 200px;
+        .header.scrolled .logo-main,
+        .header.scrolled .logo-text {
             height: 50px;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
-            transition: all 0.3s ease;
-            contain: layout;
         }
-        
-        /* Navigation Critical */
-        .nav-desktop {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 2rem;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(15px);
-            border-radius: 50px;
-            padding: 8px 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            z-index: 1005;
+        .nav-desktop a, .cta-button {
+            opacity: 0;
+            animation: fadeInUp 0.6s forwards;
         }
-        
-        .nav-desktop ul {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            gap: 8px;
-            align-items: center;
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .nav-desktop a {
-            text-decoration: none;
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 15px;
-            padding: 12px 20px;
-            border-radius: 25px;
-            position: relative;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            display: block;
-        }
-        
-        .nav-desktop a.active {
-            color: #fff;
-            background: linear-gradient(135deg, #d32f2f, #b71c1c);
-            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
-            transform: translateY(-1px);
-        }
-        
-        /* Mobile Navigation - Hidden by default */
-        .hamburger,
-        .nav-mobile,
-        .mobile-overlay {
+
+        /* === MOBILE NAV (hidden by default) === */
+        .hamburger, .nav-mobile, .mobile-overlay {
             display: none;
         }
-        
-        /* Main content spacing */
-        main {
-            flex: 1;
-            width: 100%;
-            margin-top: 100px;
-            contain: layout;
-        }
-        
-        /* Hero Section Critical (Homepage) */
-        <?php if ($is_home): ?>
-        .hero-section {
-            position: relative;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background: #000;
-            contain: layout;
-        }
-        
-        .hero-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 995;
-            aspect-ratio: 16/9;
-            background-color: #000;
-            contain: layout style paint;
-            will-change: transform, filter;
-        }
-        
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 1001;
-            text-align: center;
-            max-width: 1200px;
-            width: 90%;
-            padding: 2rem;
-            color: white;
-        }
-        <?php endif; ?>
-        
-        /* Typography Critical */
-        section h1, article h1, aside h1, nav h1 {
-            font-size: 2.5rem !important;
-        }
-        
-        /* Mobile Critical */
+
         @media (max-width: 991.98px) {
-            .nav-desktop,
-            .header .cta-button {
+            .hamburger, .nav-mobile, .mobile-overlay {
+                display: block;
+            }
+            .nav-desktop, .header .cta-button {
                 display: none;
             }
-            
-            .hamburger {
-                position: relative;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(15px);
-                border: 2px solid rgba(211, 47, 47, 0.1);
-                border-radius: 12px;
-                padding: 10px;
-                width: 44px;
-                height: 44px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                min-width: 44px;
-                min-height: 44px;
-                z-index: 1012;
-            }
-            
-            .hamburger span {
-                position: absolute;
-                left: 10px;
-                height: 2px;
-                width: 24px;
-                background: linear-gradient(90deg, #d32f2f, #b71c1c);
-                border-radius: 2px;
-                transition: all 0.3s ease;
-            }
-            
-            .hamburger span:nth-child(1) { top: 12px; }
-            .hamburger span:nth-child(2) { top: 20px; }
-            .hamburger span:nth-child(3) { top: 28px; }
-            
-            .nav-mobile {
-                position: fixed;
-                top: 100px;
-                left: -100%;
-                width: 85%;
-                max-width: 300px;
-                height: calc(100vh - 100px);
-                background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 250, 0.98));
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                box-shadow: 4px 0 30px rgba(0, 0, 0, 0.15);
-                transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                z-index: 1008;
-                overflow-y: auto;
-                border-right: 1px solid rgba(211, 47, 47, 0.1);
-                display: block;
-            }
-            
-            .nav-mobile.active {
-                left: 0;
-            }
-            
-            .mobile-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-                z-index: 1007;
-                display: block;
-            }
-            
-            .mobile-overlay.active {
-                opacity: 1;
-                visibility: visible;
-            }
         }
-        
-        @media (max-width: 768px) {
-            .header { height: 80px; }
-            .nav-mobile { top: 80px; height: calc(100vh - 80px); }
-            main { margin-top: 80px; }
-            .logo-text { width: 160px; height: 40px; }
-            section h1, article h1, aside h1, nav h1 { font-size: 2rem !important; }
-        }
-        
-        /* Prevent FOUC */
-        .no-js { visibility: hidden; }
     </style>
-    
-    <!-- Încărcare CSS principal -->
-    <?php foreach ($required_css_files as $css_file): ?>
-    <link rel="stylesheet" href="<?= $css_file ?>">
-    <?php endforeach; ?>
-    
-    <!-- External CSS - încărcare asincronă -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    
-    <!-- Swiper CSS -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
-    
-    <!-- GLightbox CSS (înlocuiește Lightbox2) -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css"></noscript>
-    
-    <!-- JavaScript Critic -->
+
+    <!-- CSS Full -->
+    <link rel="stylesheet" href="<?= $assets_path ?>css/main.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Prerender Swiper doar dacă e pe pagină -->
     <script>
-        // Remove no-js class
-        document.documentElement.classList.remove('no-js');
-        
-        // Early header height detection
-        window.addEventListener('DOMContentLoaded', function() {
-            const header = document.querySelector('.header');
-            if (header) {
-                document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
-            }
-        });
+        if (document.querySelector('.videoProjectsSwiper')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
+            document.head.appendChild(link);
+        }
     </script>
-    
-    <!-- JavaScript - încărcare optimizată -->
-    <script src="<?= $assets_path ?>js/main.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js" defer></script>
-    
-    <!-- Structured Data pentru SEO -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Der Hausmeister Michael GmbH",
-        "description": "Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg",
-        "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Berlin",
-            "addressRegion": "BE",
-            "addressCountry": "DE"
-        },
-        "telephone": "+49XXXXXXXXX",
-        "url": "<?= $base_url ?>",
-        "priceRange": "€€",
-        "openingHours": "Mo-Fr 08:00-18:00"
-    }
-    </script>
+
+    <!-- baguetteBox.js - în loc de lightbox2 (fără jQuery) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.css">
 </head>
+<body>
+
+<!-- Debug (șterge în producție) -->
+<!--
+Pagină curentă: <?= $current_page ?>
+URL de bază: <?= $base_url ?>
+Cale resurse: <?= $assets_path ?>
+Este homepage: <?= $is_home ? 'Da' : 'Nu' ?>
+-->
+
+<header class="header">
+    <div class="container">
+        <!-- Logo -->
+        <a href="<?= $base_url ?>" class="logo">
+            <img src="<?= $assets_path ?>images/logo-main.svg" alt="MeisterDach - Acoperișuri de înaltă calitate" class="logo-main" width="160" height="60">
+            <img src="<?= $assets_path ?>images/logo-text.svg" alt="MeisterDach" class="logo-text" width="200" height="50">
+        </a>
+
+        <!-- Navigație Desktop -->
+        <nav class="nav-desktop">
+            <a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Acasă</a>
+            <a href="about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Despre Noi</a>
+            <a href="services.php" class="<?= $current_page === 'services.php' ? 'active' : '' ?>">Servicii</a>
+            <a href="projects.php" class="<?= $current_page === 'projects.php' ? 'active' : '' ?>">Proiecte</a>
+            <a href="contact.php" class="<?= $current_page === 'contact.php' ? 'active' : '' ?>">Contact</a>
+        </nav>
+
+        <!-- CTA Button -->
+        <a href="contact.php" class="cta-button">
+            <i class="fas fa-phone-alt"></i> Programați o consultare
+        </a>
+
+        <!-- Hamburger Menu (Mobil) -->
+        <button class="hamburger" aria-label="Meniu mobil" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Meniu Mobil -->
+    <nav class="nav-mobile" aria-hidden="true">
+        <ul>
+            <li><a href="<?= $base_url ?>">Acasă</a></li>
+            <li><a href="about.php">Despre Noi</a></li>
+            <li><a href="services.php">Servicii</a></li>
+            <li><a href="projects.php">Proiecte</a></li>
+            <li><a href="contact.php">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Overlay Mobil -->
+    <div class="mobile-overlay" aria-hidden="true"></div>
+</header>
+
+<!-- baguetteBox.js - galerii fără jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.js" async></script>
+<script>
+    // Inițializează baguetteBox doar dacă există elemente cu galerie
+    document.addEventListener('DOMContentLoaded', function () {
+        if (document.querySelector('.gallery')) {
+            baguetteBox.run('.gallery', {
+                animation: 'fadeIn',
+                noScrollbars: true,
+                buttons: 'auto',
+                fullScreen: false,
+                callback: null
+            });
+        }
+    });
+</script>
+
+<!-- JavaScript principal (defer) -->
+<script src="<?= $assets_path ?>js/main.js" defer></script>
+
+<!-- Swiper doar dacă există pe pagină -->
+<script>
+    if (document.querySelector('.videoProjectsSwiper')) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+        script.defer = true;
+        document.body.appendChild(script);
+    }
+</script>
+
+<!-- Preconnect pentru CDN-uri -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+<!-- Favicon -->
+<link rel="icon" href="<?= $assets_path ?>images/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="<?= $assets_path ?>images/apple-touch-icon.png">
 <body class="no-js">
     <!-- Skip to content link for accessibility -->
     <a href="#main" class="skip-link">Skip to main content</a>
