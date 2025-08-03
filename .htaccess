@@ -1,4 +1,3 @@
-am deja in htaccess asa - # În .htaccess
 <IfModule mod_expires.c>
   ExpiresActive on
   # Poate fi util pentru HTTP/1
