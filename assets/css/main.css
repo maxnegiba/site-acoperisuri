@@ -793,13 +793,17 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
    ========================================================================== */
 
 /* Actualizează stilurile pentru hero section */
+
 .hero-section {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
     width: 100%;
-    contain: layout;
-    aspect-ratio: 16/9;
+    position: relative;
     overflow: hidden;
+    contain: layout; /* Optimizare CLS */
 }
 
 .hero-video-container {
@@ -809,8 +813,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     width: 100%;
     height: 100%;
     z-index: 1;
-    contain: layout;
-    aspect-ratio: 16/9;
+    contain: layout; /* Optimizare CLS */
 }
 
 .video-placeholder {
@@ -822,10 +825,8 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     background-size: cover;
     background-position: center;
     z-index: 1;
-    contain: layout;
-    aspect-ratio: 16/9;
-    display: block;
-    will-change: transform;
+    contain: layout; /* Optimizare CLS */
+    display: block; /* Asigură afișare corectă */
 }
 
 .hero-overlay {
@@ -857,8 +858,9 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
 }
 
 
+
 .hero-video {
-   position: absolute;
+    position: absolute;
     top: 50%;
     left: 50%;
     min-width: 100%;
@@ -868,12 +870,9 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     transform: translate(-50%, -50%);
     object-fit: cover;
     z-index: 2;
-    /* Prevent layout shift */
-    min-height: 100vh;
     opacity: 0;
     transition: opacity 0.5s ease;
 }
-
 
 .hero-video-container img {
     position: absolute;
@@ -900,9 +899,9 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5); /* Păstrăm opacitatea originală */
     z-index: var(--z-hero-overlay);
-    contain: layout;
+    contain: layout; /* Optimizare CLS */
 }
 
 .hero-content {
@@ -914,14 +913,13 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     width: 100%;
     max-width: 1200px;
     box-sizing: border-box;
-    min-height: calc(100vh - var(--header-height));
-    contain: layout;
+    contain: layout; /* Optimizare CLS */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: calc(100vh - var(--header-height)); /* Păstrăm înălțimea */
 }
-
 
 .hero-content h1 {
     font-size: clamp(2.5rem, 5vw, 4rem);
@@ -947,7 +945,7 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     animation: fadeInUp 1s ease-out 0.4s forwards;
     opacity: 0;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    min-height: 2em;
+    min-height: 2em; /* Previne schimbări de aspect */
 }
 
 .trust-badges {

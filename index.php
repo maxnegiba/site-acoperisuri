@@ -14,12 +14,9 @@ include(__DIR__ . '/includes/header.php');
 <section class="hero-section">
     <div class="hero-video-container">
         <div class="video-placeholder" 
-     style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg'); 
-            width: 100%; 
-            height: 100vh; 
-            min-height: 600px;"
-     fetchpriority="high">
-</div>
+             style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"
+             fetchpriority="high">
+        </div>
         <video class="hero-video"
                poster="<?= $assets_path ?>img/hero-placeholder.jpg"
                autoplay
@@ -27,12 +24,10 @@ include(__DIR__ . '/includes/header.php');
                loop
                playsinline
                preload="metadata"
-               style="opacity: 0;"
-               >
+               style="opacity: 0;">
             <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
         </video>
     </div>
-    <!-- Overlay -->
     <!-- Overlay -->
     <div class="hero-overlay"></div>
     <!-- Content -->
