@@ -243,9 +243,9 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
     
     <!-- Încărcare CSS pentru toate paginile (local, preload) -->
     <?php foreach ($required_css_files as $css_file): ?>
-        <link rel="preload" href="<?= $css_file ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="<?= $css_file ?>"></noscript>
-    <?php endforeach; ?>
+    <link rel="preload" href="<?= $css_file ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $css_file ?>"></noscript>
+<?php endforeach; ?>
     
     <!-- External libraries - local și preload (reduce terțe părți) -->
     <link rel="preload" href="<?= $assets_path ?>css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
