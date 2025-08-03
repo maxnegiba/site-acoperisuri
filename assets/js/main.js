@@ -1,18 +1,17 @@
 /* =========================================================
-   MAIN.JS – MeisterDach Website Core
-   Version: 4.0 | Last update: 2024-12-19
-   Optimized for performance - No jQuery dependency
-   Contains:
-   • Header scroll optimization
-   • Hero video lazy-load
-   • Cinematic Swiper initialization
-   • Mobile menu handling
-   • Performance optimizations
+MAIN.JS – MeisterDach Website Core
+Version: 4.0.1 | Last update: 2024-04-05
+Fixes: Swiper loading, MobileMenu robustness
+Optimized for performance - No jQuery dependency
+Contains:
+• Header scroll optimization
+• Hero video lazy-load
+• Cinematic Swiper initialization (with safe loading)
+• Mobile menu handling (robust)
+• Performance optimizations
 ========================================================= */
 
-/* ---------------------------------------------------------
-   1. CONFIG & UTILITIES
---------------------------------------------------------- */
+/* -1. CONFIG & UTILITIES- */
 const CONFIG = {
     debounceDelay: 150,
     autoplayDelay: 6000,
@@ -22,91 +21,47 @@ const CONFIG = {
 // Debounce helper
 const debounce = (fn, wait = CONFIG.debounceDelay) => {
     let timeout;
-    return (...args) => {
+    return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => fn.apply(this, args), wait);
     };
 };
 
-// Throttle helper
-const throttle = (fn, wait = 100) => {
-    let inThrottle, lastFn, lastTime;
-    return function() {
-        const context = this,
-            args = arguments;
-        if (!inThrottle) {
-            fn.apply(context, args);
-            lastTime = Date.now();
-            inThrottle = true;
-        } else {
-            clearTimeout(lastFn);
-            lastFn = setTimeout(function() {
-                if (Date.now() - lastTime >= wait) {
-                    fn.apply(context, args);
-                    lastTime = Date.now();
-                }
-            }, Math.max(wait - (Date.now() - lastTime), 0));
-        }
-    };
-};
+// Passive event support check
+let passiveSupported = false;
+try {
+    window.addEventListener("test", null, Object.defineProperty({}, "passive", {
+        get: function () { passiveSupported = { passive: true }; }
+    }));
+} catch (err) { }
 
-// Check passive event support
-const passiveSupported = (() => {
-    let passive = false;
-    try {
-        const options = {
-            get passive() {
-                passive = true;
-                return false;
-            }
-        };
-        window.addEventListener("test", null, options);
-        window.removeEventListener("test", null, options);
-    } catch(err) {}
-    return passive;
-})();
-
-/* ---------------------------------------------------------
-   2. HEADER SCROLL OPTIMIZATION
---------------------------------------------------------- */
-const header = document.querySelector('.header');
-let headerHeight = null;
-let lastScrollY = 0;
+/* -2. HEADER OPTIMIZATION- */
+let headerHeight = 100;
 let ticking = false;
 
-// Cache header height
 function cacheHeaderHeight() {
+    const header = document.querySelector('.header');
     if (header) {
         headerHeight = header.offsetHeight;
+        document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
     }
 }
 
-// Optimized header state update
 function updateHeaderState() {
+    const header = document.querySelector('.header');
     if (!header) return;
-    
-    const scrollY = window.scrollY;
-    
-    // Avoid unnecessary updates
-    if (Math.abs(scrollY - lastScrollY) < 5) {
-        ticking = false;
-        return;
-    }
-    
-    lastScrollY = scrollY;
-    const isScrolled = scrollY > 50;
-    
-    // Use only classes, no inline styles
-    if (isScrolled && !header.classList.contains('scrolled')) {
+
+    const scrolled = window.scrollY > headerHeight;
+    const isHome = document.body.classList.contains('home-page');
+
+    if (scrolled && isHome) {
         header.classList.add('scrolled');
-    } else if (!isScrolled && header.classList.contains('scrolled')) {
+    } else {
         header.classList.remove('scrolled');
     }
-    
     ticking = false;
 }
 
-// Request animation frame for scroll
 function requestTick() {
     if (!ticking) {
         requestAnimationFrame(updateHeaderState);
@@ -119,193 +74,178 @@ document.addEventListener('DOMContentLoaded', () => {
     cacheHeaderHeight();
     updateHeaderState();
 });
-
 window.addEventListener('resize', debounce(cacheHeaderHeight, 250));
 window.addEventListener('scroll', requestTick, { passive: true });
 
-/* ---------------------------------------------------------
-   3. MOBILE MENU HANDLING
---------------------------------------------------------- */
+/* -3. MOBILE MENU HANDLING (Robust)- */
 class MobileMenu {
     constructor() {
         this.hamburger = document.querySelector('.hamburger');
         this.navMobile = document.querySelector('.nav-mobile');
         this.overlay = document.querySelector('.mobile-overlay');
         this.isOpen = false;
-        
         this.init();
     }
-    
+
     init() {
-        if (!this.hamburger || !this.navMobile) return;
-        
+        if (!this.hamburger || !this.navMobile) {
+            console.warn('Mobile menu elements not found');
+            return;
+        }
+
         // Event listeners
         this.hamburger.addEventListener('click', () => this.toggle());
         this.overlay?.addEventListener('click', () => this.close());
-        
+
         // Close on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) {
                 this.close();
             }
         });
-        
+
         // Close on link click
         const links = this.navMobile.querySelectorAll('a');
         links.forEach(link => {
             link.addEventListener('click', () => this.close());
         });
     }
-    
+
     toggle() {
         this.isOpen ? this.close() : this.open();
     }
-    
+
     open() {
         this.isOpen = true;
         this.hamburger.classList.add('active');
         this.navMobile.classList.add('active');
         this.overlay?.classList.add('active');
         this.hamburger.setAttribute('aria-expanded', 'true');
-        
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
     }
-    
+
     close() {
         this.isOpen = false;
         this.hamburger.classList.remove('active');
         this.navMobile.classList.remove('active');
         this.overlay?.classList.remove('active');
         this.hamburger.setAttribute('aria-expanded', 'false');
-        
         // Restore body scroll
         document.body.style.overflow = '';
     }
 }
 
-/* ---------------------------------------------------------
-   4. HERO VIDEO OPTIMIZATION
---------------------------------------------------------- */
-class HeroVideo {
-    constructor() {
-        this.video = document.querySelector('.hero-video');
-        this.section = document.querySelector('.hero-section');
-        
-        if (this.video) {
-            this.init();
-        }
+// Ensure MobileMenu is initialized safely
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        new MobileMenu();
+    } catch (e) {
+        console.error('Failed to initialize MobileMenu:', e);
     }
-    
-    init() {
-        // Set initial state
-        this.video.style.opacity = '0';
-        this.video.style.transition = 'opacity 0.5s ease';
-        
-        // Handle video load
-        this.video.addEventListener('loadeddata', () => {
-            this.onVideoLoaded();
-        });
-        
-        // Fallback
-        setTimeout(() => {
-            if (!this.video.hasAttribute('data-loaded')) {
-                this.onVideoLoaded();
-            }
-        }, 3500);
-        
-        // Try autoplay
-        this.attemptAutoplay();
-    }
-    
-    onVideoLoaded() {
-        this.video.setAttribute('data-loaded', 'true');
-        this.video.style.opacity = '1';
-        
-        // Remove placeholder if exists
-        const placeholder = this.section?.querySelector('.hero-placeholder');
-        if (placeholder) {
-            placeholder.style.opacity = '0';
-            setTimeout(() => placeholder.remove(), 500);
-        }
-    }
-    
-    attemptAutoplay() {
-        const playPromise = this.video.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.catch(() => {
-                // Fallback to poster
-                this.video.style.display = 'none';
-                if (this.section) {
-                    const poster = this.video.getAttribute('poster');
-                    if (poster) {
-                        this.section.style.backgroundImage = `url(${poster})`;
-                        this.section.style.backgroundSize = 'cover';
-                        this.section.style.backgroundPosition = 'center';
-                    }
-                }
-            });
-        }
-    }
-}
+});
 
-/* ---------------------------------------------------------
-   5. CINEMATIC CAROUSEL
---------------------------------------------------------- */
-class CinematicCarousel {
+/* -4. HERO VIDEO OPTIMIZATION- */
+class HeroVideoManager {
     constructor() {
-        this.swiper = null;
-        this.isInitialized = false;
-        this.autoplayProgress = null;
-        this.progressBar = null;
-        this.slideCounter = null;
-        this.videos = [];
-        
+        this.container = document.getElementById('hero-video-container');
+        this.video = document.getElementById('hero-video');
         this.init();
     }
 
     init() {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initializeCarousel());
-        } else {
-            this.initializeCarousel();
-        }
-    }
+        if (!this.container || !this.video) return;
 
-    initializeCarousel() {
-        const carouselElement = document.querySelector('.videoProjectsSwiper');
-        if (!carouselElement) return;
-
-        this.initializeElements();
         this.preloadVideos();
-        this.initializeSwiper();
-        this.setupEventListeners();
-        
-        // Remove loading state
-        setTimeout(() => {
-            document.querySelector('.cinematic-carousel')?.classList.remove('loading');
-        }, 500);
+        this.setupIntersectionObserver();
     }
 
-    initializeElements() {
-        this.autoplayProgress = document.querySelector('.swiper-autoplay-progress circle');
-        this.progressBar = document.querySelector('.progress-bar');
+    preloadVideos() {
+        if (!this.video) return;
+        const videos = [this.video];
+        videos.forEach((video, index) => {
+            video.setAttribute('loading', index === 0 ? 'eager' : 'lazy');
+            video.addEventListener('loadeddata', () => {
+                video.classList.add('loaded');
+            });
+            video.addEventListener('error', () => {
+                console.warn(`Video ${index + 1} failed to load`);
+                video.style.display = 'none';
+            });
+        });
+    }
+
+    setupIntersectionObserver() {
+        if (!this.video || !('IntersectionObserver' in window)) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this.video.play().catch(e => console.warn('Autoplay blocked:', e));
+                } else {
+                    this.video.pause();
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(this.video);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        new HeroVideoManager();
+    } catch (e) {
+        console.error('Failed to initialize HeroVideoManager:', e);
+    }
+});
+
+/* -5. CINEMATIC SWIPER (Safe Loading) - */
+class CinematicSwiper {
+    constructor() {
+        this.swiper = null;
+        this.isInitialized = false;
+        this.autoplayProgress = document.querySelector('.autoplay-progress svg circle');
         this.slideCounter = {
-            current: document.querySelector('.current-slide'),
-            total: document.querySelector('.total-slides')
+            current: document.querySelector('.slide-counter .current'),
+            total: document.querySelector('.slide-counter .total')
         };
-        this.videos = document.querySelectorAll('.bg-video');
+        this.videos = document.querySelectorAll('.videoProjectsSwiper video');
+    }
+
+    // Method to initialize Swiper after it's loaded
+    init() {
+        const swiperElement = document.querySelector('.videoProjectsSwiper');
+        if (!swiperElement) return;
+
+        // Check if Swiper is already available
+        if (typeof Swiper !== 'undefined') {
+            this.initializeSwiper();
+        } else {
+            // Wait for Swiper to be loaded (e.g., by the script loader in header.php)
+            const checkSwiper = setInterval(() => {
+                if (typeof Swiper !== 'undefined') {
+                    clearInterval(checkSwiper);
+                    this.initializeSwiper();
+                }
+            }, 100); // Check every 100ms
+
+            // Failsafe timeout
+            setTimeout(() => {
+                if (!this.isInitialized) {
+                    clearInterval(checkSwiper);
+                    console.error('Swiper failed to load within timeout.');
+                }
+            }, 5000); // 5 seconds timeout
+        }
     }
 
     preloadVideos() {
         this.videos.forEach((video, index) => {
             video.setAttribute('loading', index === 0 ? 'eager' : 'lazy');
-            
             video.addEventListener('loadeddata', () => {
                 video.classList.add('loaded');
             });
-
             video.addEventListener('error', () => {
                 console.warn(`Video ${index + 1} failed to load`);
                 video.style.display = 'none';
@@ -315,13 +255,13 @@ class CinematicCarousel {
 
     initializeSwiper() {
         const swiperElement = document.querySelector('.videoProjectsSwiper');
-        if (!swiperElement || typeof Swiper === 'undefined') return;
-        
+        if (!swiperElement || typeof Swiper === 'undefined' || this.isInitialized) return;
+
         // Pre-calculate dimensions
         const rect = swiperElement.getBoundingClientRect();
         swiperElement.style.width = `${rect.width}px`;
         swiperElement.style.height = `${rect.height}px`;
-        
+
         requestAnimationFrame(() => {
             this.swiper = new Swiper(swiperElement, {
                 // Core settings
@@ -329,37 +269,36 @@ class CinematicCarousel {
                 effect: 'fade',
                 speed: 1200,
                 grabCursor: true,
-                
+
                 // Performance optimizations
                 observer: false,
                 observeParents: false,
                 observeSlideChildren: false,
                 updateOnWindowResize: false,
                 preloadImages: false,
-                
                 // Lazy loading
                 lazy: {
                     loadPrevNext: true,
                     loadOnTransitionStart: true
                 },
-                
+
                 // Touch settings
                 touchEventsTarget: 'container',
                 passiveListeners: passiveSupported,
-                
+
                 // Autoplay
                 autoplay: {
                     delay: CONFIG.autoplayDelay,
                     disableOnInteraction: false,
                     pauseOnMouseEnter: true,
                 },
-                
+
                 // Navigation
                 navigation: {
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
                 },
-                
+
                 // Pagination
                 pagination: {
                     el: '.swiper-pagination',
@@ -371,13 +310,13 @@ class CinematicCarousel {
                         return `<button class="${className}" aria-label="Slide ${index + 1}" type="button"></button>`;
                     }
                 },
-                
+
                 // Keyboard
                 keyboard: {
                     enabled: true,
                     onlyInViewport: true,
                 },
-                
+
                 // Accessibility
                 a11y: {
                     prevSlideMessage: 'Proiectul anterior',
@@ -385,12 +324,12 @@ class CinematicCarousel {
                     firstSlideMessage: 'Acesta este primul slide',
                     lastSlideMessage: 'Acesta este ultimul slide',
                 },
-                
+
                 // Fade effect
                 fadeEffect: {
                     crossFade: true,
                 },
-                
+
                 // Events
                 on: {
                     init: () => {
@@ -408,11 +347,10 @@ class CinematicCarousel {
                     touchEnd: () => this.playActiveVideo(),
                 },
             });
-            
+
             // Remove fixed dimensions
             swiperElement.style.width = '';
             swiperElement.style.height = '';
-            
             this.isInitialized = true;
         });
     }
@@ -426,10 +364,8 @@ class CinematicCarousel {
     onSlideChange() {
         this.updateSlideCounter(this.swiper);
         this.handleVideoTransition();
-        
         const progress = (this.swiper.realIndex + 1) / this.getTotalUniqueSlides(this.swiper) * 100;
         this.updateProgressBar(progress);
-        
         this.announceSlideChange(this.swiper.realIndex + 1);
         this.preloadNextSlide();
     }
@@ -438,120 +374,85 @@ class CinematicCarousel {
         return swiper.slides.filter(slide => !slide.classList.contains('swiper-slide-duplicate')).length;
     }
 
-    handleVideoTransition() {
-        this.pauseAllVideos();
-        setTimeout(() => this.playActiveVideo(), 300);
-    }
-
-    playActiveVideo() {
-        if (!this.swiper) return;
-        
-        const activeSlide = this.swiper.slides[this.swiper.activeIndex];
-        const activeVideo = activeSlide?.querySelector('.bg-video');
-        
-        if (activeVideo) {
-            activeVideo.currentTime = 0;
-            activeVideo.play().catch(() => {
-                activeVideo.style.display = 'none';
-                const poster = activeVideo.getAttribute('poster');
-                if (poster) {
-                    activeSlide.style.backgroundImage = `url(${poster})`;
-                    activeSlide.style.backgroundSize = 'cover';
-                }
-            });
-        }
-    }
-
-    pauseAllVideos() {
-        this.videos.forEach(video => {
-            if (!video.paused) {
-                video.pause();
-            }
-        });
-    }
-
-    preloadNextSlide() {
-        if (!this.swiper) return;
-        
-        const nextIndex = (this.swiper.activeIndex + 1) % this.swiper.slides.length;
-        const nextSlide = this.swiper.slides[nextIndex];
-        const nextVideo = nextSlide?.querySelector('.bg-video');
-        
-        if (nextVideo && nextVideo.preload === 'none') {
-            nextVideo.preload = 'metadata';
-        }
-    }
-
     updateSlideCounter(swiper) {
         if (!this.slideCounter.current || !this.slideCounter.total) return;
-        
         const totalSlides = this.getTotalUniqueSlides(swiper);
         const current = String(swiper.realIndex + 1).padStart(2, '0');
         const total = String(totalSlides).padStart(2, '0');
-        
         this.slideCounter.current.textContent = current;
         this.slideCounter.total.textContent = total;
     }
 
     updateAutoplayProgress(progress) {
         if (!this.autoplayProgress) return;
-        
         const circumference = 2 * Math.PI * 20;
         const offset = circumference * (1 - progress);
-        
         this.autoplayProgress.style.strokeDashoffset = offset;
-                this.autoplayProgress.style.stroke = progress > 0.8 ? '#d32f2f' : 'rgba(255,255,255,0.6)';
-    }
-
-    updateProgressBar(progress) {
-        if (!this.progressBar) return;
-        this.progressBar.style.width = `${progress}%`;
+        this.autoplayProgress.style.stroke = progress > 0.8 ? '#d32f2f' : 'rgba(255,255,255,0.6)';
     }
 
     onAutoplayStart() {
-        document.querySelector('.swiper-autoplay-progress')?.classList.add('active');
+        // Optional: Add visual indicator for autoplay start
     }
 
     onAutoplayStop() {
-        document.querySelector('.swiper-autoplay-progress')?.classList.remove('active');
+        // Optional: Add visual indicator for autoplay stop
     }
 
-    announceSlideChange(slideNumber) {
-        const announcement = document.createElement('div');
-        announcement.setAttribute('aria-live', 'polite');
-        announcement.setAttribute('aria-atomic', 'true');
-        announcement.className = 'sr-only';
-        announcement.textContent = `Slide ${slideNumber} activ`;
-        
-        document.body.appendChild(announcement);
-        
-        setTimeout(() => {
-            document.body.removeChild(announcement);
-        }, 1000);
+    playActiveVideo() {
+        const activeSlide = this.swiper?.slides[this.swiper.activeIndex];
+        const video = activeSlide?.querySelector('video');
+        if (video) {
+            video.play().catch(e => console.warn('Autoplay blocked:', e));
+        }
     }
 
-    setupEventListeners() {
-        const carousel = document.querySelector('.cinematic-carousel');
-        if (!carousel) return;
-
-        // Pause/resume on hover
-        carousel.addEventListener('mouseenter', () => {
-            if (this.swiper?.autoplay) {
-                this.swiper.autoplay.stop();
-            }
+    pauseAllVideos() {
+        this.videos.forEach(video => {
+            video.pause();
         });
+    }
 
-        carousel.addEventListener('mouseleave', () => {
-            if (this.swiper?.autoplay) {
-                this.swiper.autoplay.start();
-            }
-        });
+    handleVideoTransition() {
+        this.pauseAllVideos();
+        setTimeout(() => this.playActiveVideo(), 300); // Slight delay for transition
+    }
 
-        // Keyboard navigation
+    updateProgressBar(progress) {
+        const bar = document.querySelector('.progress-bar .progress');
+        if (bar) {
+            bar.style.width = `${progress}%`;
+        }
+    }
+
+    announceSlideChange(index) {
+        const announcement = document.querySelector('.sr-announce');
+        if (announcement) {
+            announcement.textContent = `Slide ${index} afișat`;
+        }
+    }
+
+    preloadNextSlide() {
+        const nextIndex = (this.swiper.realIndex + 1) % this.swiper.slides.length;
+        const nextSlide = this.swiper.slides[nextIndex];
+        const video = nextSlide?.querySelector('video');
+        if (video && video.readyState < 3) { // HAVE_FUTURE_DATA
+            video.load();
+        }
+    }
+
+    toggleAutoplay() {
+        if (this.swiper?.autoplay?.running) {
+            this.swiper.autoplay.stop();
+        } else {
+            this.swiper?.autoplay?.start();
+        }
+    }
+
+    setupKeyboardControls() {
         document.addEventListener('keydown', (e) => {
             if (!this.swiper) return;
-            
-            switch(e.key) {
+            switch (e.key) {
                 case 'ArrowLeft':
                     e.preventDefault();
                     this.swiper.slidePrev();
@@ -566,8 +467,10 @@ class CinematicCarousel {
                     break;
             }
         });
+    }
 
-        // Visibility change handling
+    // Visibility change handling
+    setupVisibilityHandler() {
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.pauseAllVideos();
@@ -577,80 +480,80 @@ class CinematicCarousel {
                 this.swiper?.autoplay?.start();
             }
         });
-
-        // Intersection Observer
-        this.setupIntersectionObserver();
     }
 
     setupIntersectionObserver() {
-        const carousel = document.querySelector('.cinematic-carousel');
-        if (!carousel) return;
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    this.playActiveVideo();
-                    this.swiper?.autoplay?.start();
-                } else {
-                    this.pauseAllVideos();
-                    this.swiper?.autoplay?.stop();
-                }
-            });
-        }, {
-            threshold: 0.5
-        });
-
-        observer.observe(carousel);
-    }
-
-    toggleAutoplay() {
-        if (!this.swiper?.autoplay) return;
-        
-        if (this.swiper.autoplay.running) {
-            this.swiper.autoplay.stop();
-        } else {
-            this.swiper.autoplay.start();
-        }
+        // Optional: Pause swiper when not in view
     }
 
     destroy() {
-        if (this.swiper) {
-            this.pauseAllVideos();
-            this.swiper.destroy(true, true);
-            this.swiper = null;
-            this.isInitialized = false;
-        }
+        this.swiper?.destroy(true, true);
+        this.swiper = null;
+        this.isInitialized = false;
     }
 }
 
-/* ---------------------------------------------------------
-   6. PROJECTS SWIPER
---------------------------------------------------------- */
+// Initialize CinematicSwiper safely after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize other components first
+    // ...
+
+    // Then initialize Swiper component
+    try {
+        const cinematicSwiper = new CinematicSwiper();
+        cinematicSwiper.init(); // This now handles waiting for Swiper
+        cinematicSwiper.setupKeyboardControls();
+        cinematicSwiper.setupVisibilityHandler();
+    } catch (e) {
+        console.error('Failed to initialize CinematicSwiper:', e);
+    }
+});
+
+/* -6. PROJECTS SWIPER (Safe Loading)- */
 function initProjectsSwiper() {
     const el = document.querySelector('.projectsSwiper');
-    if (!el || typeof Swiper === 'undefined') return;
+    if (!el) return;
 
+    // Check if Swiper is already available
+    if (typeof Swiper !== 'undefined') {
+        createProjectsSwiper(el);
+    } else {
+        // Wait for Swiper to be loaded
+        const checkSwiper = setInterval(() => {
+            if (typeof Swiper !== 'undefined') {
+                clearInterval(checkSwiper);
+                createProjectsSwiper(el);
+            }
+        }, 100);
+
+        // Failsafe timeout
+        setTimeout(() => {
+            if (!document.querySelector('.projectsSwiper .swiper-wrapper')) { // Simple check if not initialized
+                clearInterval(checkSwiper);
+                console.error('Projects Swiper failed to load within timeout.');
+            }
+        }, 5000);
+    }
+}
+
+function createProjectsSwiper(el) {
     requestAnimationFrame(() => {
         new Swiper(el, {
             loop: true,
             spaceBetween: 10,
             slidesPerView: 1,
-            
             // Performance optimizations
             observer: false,
             observeParents: false,
             preloadImages: false,
-            
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
             },
-            
             autoplay: {
                 delay: 5000,
                 disableOnInteraction: false,
             },
-            
             breakpoints: {
                 640: { slidesPerView: 1 },
                 768: { slidesPerView: 2 },
@@ -660,210 +563,11 @@ function initProjectsSwiper() {
     });
 }
 
-/* ---------------------------------------------------------
-   7. LIGHTBOX INITIALIZATION (GLightbox)
---------------------------------------------------------- */
-function initLightbox() {
-    if (typeof GLightbox !== 'undefined') {
-        const lightbox = GLightbox({
-            selector: '.glightbox',
-            touchNavigation: true,
-            loop: true,
-            preload: false,
-            autoplayVideos: false,
-            plyr: {
-                css: 'https://cdn.plyr.io/3.6.8/plyr.css',
-                js: 'https://cdn.plyr.io/3.6.8/plyr.js',
-                config: {
-                    ratio: '16:9',
-                    youtube: {
-                        noCookie: true,
-                        rel: 0,
-                        showinfo: 0,
-                        iv_load_policy: 3
-                    }
-                }
-            }
-        });
-    }
-}
-
-/* ---------------------------------------------------------
-   8. SMOOTH SCROLL
---------------------------------------------------------- */
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (href === '#') return;
-            
-            const target = document.querySelector(href);
-            if (!target) return;
-            
-            e.preventDefault();
-            
-            const headerOffset = headerHeight || 100;
-            const elementPosition = target.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            });
-        });
-    });
-}
-
-/* ---------------------------------------------------------
-   9. LAZY LOADING IMAGES
---------------------------------------------------------- */
-function initLazyLoading() {
-    const images = document.querySelectorAll('img[data-src]');
-    
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    img.classList.add('lazyloaded');
-                    imageObserver.unobserve(img);
-                }
-            });
-        }, {
-            rootMargin: '50px 0px',
-            threshold: 0.01
-        });
-
-        images.forEach(img => imageObserver.observe(img));
-    } else {
-        // Fallback for older browsers
-        images.forEach(img => {
-            img.src = img.dataset.src;
-            img.removeAttribute('data-src');
-            img.classList.add('lazyloaded');
-        });
-    }
-}
-
-/* ---------------------------------------------------------
-   10. PERFORMANCE MONITORING
---------------------------------------------------------- */
-function initPerformanceMonitoring() {
-    if ('PerformanceObserver' in window) {
-        // CLS Monitoring
-        let clsValue = 0;
-        const clsObserver = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-                if (!entry.hadRecentInput) {
-                    clsValue += entry.value;
-                    if (clsValue > 0.1) {
-                        console.warn('High CLS detected:', clsValue);
-                    }
-                }
-            }
-        });
-        clsObserver.observe({type: 'layout-shift', buffered: true});
-        
-        // LCP Monitoring
-        const lcpObserver = new PerformanceObserver((list) => {
-            const entries = list.getEntries();
-            const lastEntry = entries[entries.length - 1];
-            console.log('LCP:', lastEntry.startTime);
-        });
-        lcpObserver.observe({type: 'largest-contentful-paint', buffered: true});
-        
-        // FID Monitoring
-        const fidObserver = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-                console.log('FID:', entry.processingStart - entry.startTime);
-            }
-        });
-        fidObserver.observe({type: 'first-input', buffered: true});
-    }
-}
-
-/* ---------------------------------------------------------
-   11. ACCESSIBILITY HELPERS
---------------------------------------------------------- */
-function initAccessibility() {
-    // Skip to content
-    const skipLink = document.querySelector('.skip-link');
-    if (skipLink) {
-        skipLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(skipLink.getAttribute('href'));
-            if (target) {
-                target.tabIndex = -1;
-                target.focus();
-            }
-        });
-    }
-    
-    // Reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.style.setProperty('--transition-fast', '0.001ms');
-        document.documentElement.style.setProperty('--transition-normal', '0.001ms');
-        document.documentElement.style.scrollBehavior = 'auto';
-        
-        // Disable autoplay
-        document.querySelectorAll('video[autoplay]').forEach(video => {
-            video.removeAttribute('autoplay');
-        });
-    }
-}
-
-/* ---------------------------------------------------------
-   12. INITIALIZATION
---------------------------------------------------------- */
+// Initialize Projects Swiper safely
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize core components
-    const mobileMenu = new MobileMenu();
-    const heroVideo = new HeroVideo();
-    const cinematicCarousel = new CinematicCarousel();
-    
-    // Initialize other features
-    initProjectsSwiper();
-    initLightbox();
-    initSmoothScroll();
-    initLazyLoading();
-    initAccessibility();
-    
-    // Initialize performance monitoring in development
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        initPerformanceMonitoring();
-    }
-    
-    // Dynamic imports for page-specific modules
-    if (document.querySelector('#gallery')) {
-        import('./modules/projects.js').then(m => m.default?.());
-    }
-    
-    if (document.querySelector('#ajaxForm')) {
-        import('./modules/contact-form.js').then(m => m.initContactForm?.());
+    try {
+        initProjectsSwiper();
+    } catch (e) {
+        console.error('Failed to initialize Projects Swiper:', e);
     }
 });
-
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    if (window.cinematicCarousel) {
-        window.cinematicCarousel.destroy();
-    }
-});
-
-// Export for external use
-window.MobileMenu = MobileMenu;
-window.HeroVideo = HeroVideo;
-window.CinematicCarousel = CinematicCarousel;
-
-/* ---------------------------------------------------------
-   13. SERVICE WORKER REGISTRATION (Optional)
---------------------------------------------------------- */
-if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => console.log('SW registered:', registration))
-            .catch(error => console.log('SW registration failed:', error));
-    });
-}
