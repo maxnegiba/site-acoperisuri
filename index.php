@@ -12,27 +12,30 @@ include(__DIR__ . '/includes/header.php');
 
 <!-- HERO SECTION -->
 <section class="hero-section">
-    <div class="hero-video-container" id="hero-video-container">
-        <div class="video-placeholder"
+    <div class="hero-video-container">
+        <div class="video-placeholder" 
              style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"
              fetchpriority="high">
         </div>
-
-        <video id="hero-video"
-               class="hero-video"
+        <video class="hero-video"
                poster="<?= $assets_path ?>img/hero-placeholder.jpg"
-               autoplay muted loop playsinline preload="metadata">
+               autoplay
+               muted
+               loop
+               playsinline
+               preload="metadata"
+               style="opacity: 0;">
             <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
         </video>
     </div>
-
+    
     <!-- Decorative elements -->
     <div class="hero-decoration hero-circle"></div>
     <div class="hero-decoration hero-circle-2"></div>
-
+    
     <!-- Overlay -->
     <div class="hero-overlay"></div>
-
+    
     <!-- Content -->
     <div class="hero-content">
         <h1>Herzlich Willkommen bei Der Hausmeister Michael GmbH</h1>
@@ -47,7 +50,6 @@ include(__DIR__ . '/includes/header.php');
             <br>Bund, Länder, Gemeinden & Privatkunden vertrauen uns.
         </p>
         <a href="contact.php" class="cta-button">Jetzt unverbindlich anfragen</a>
-
         <!-- Trust Badges -->
         <div class="trust-badges">
             <span>🏆 20+ Jahre Meisterbetrieb</span>
@@ -55,7 +57,7 @@ include(__DIR__ . '/includes/header.php');
             <span>✅ Zertifiziert für öffentliche Aufträge</span>
         </div>
     </div>
-
+    
     <!-- Scroll Indicator -->
     <div class="scroll-indicator">
         <span></span>
