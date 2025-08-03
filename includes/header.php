@@ -276,7 +276,34 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
    
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.5/dist/js/lightbox.min.js" defer crossorigin></script>
 
-    
+   <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const video = document.querySelector(".hero-video");
+    const container = document.querySelector(".hero-video-container");
+
+    if (video) {
+        // When video starts playing, mark as loaded
+        video.addEventListener("play", () => {
+            video.setAttribute("data-loaded", "true");
+            container.classList.add("video-loaded");
+        });
+
+        // If video fails to load, use fallback
+        video.addEventListener("error", () => {
+            console.warn("Hero video failed to load. Using fallback image.");
+            container.classList.add("video-loaded");
+        });
+
+        // As a backup, after 2s assume it's loaded (or failed)
+        setTimeout(() => {
+            if (!video.hasAttribute("data-loaded")) {
+                video.setAttribute("data-loaded", "true");
+                container.classList.add("video-loaded");
+            }
+        }, 2000);
+    }
+});
+</script> 
 </head>
 <body>
     <!-- Depanare - comentariu HTML cu informații utile (șterge în producție) -->
