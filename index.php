@@ -13,10 +13,7 @@ include(__DIR__ . '/includes/header.php');
 <!-- HERO SECTION -->
 <section class="hero-section">
     <div class="hero-video-container">
-        <div class="video-placeholder" 
-             style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"
-             fetchpriority="high">
-        </div>
+        <div class="video-placeholder" style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"></div>
         <video class="hero-video"
                poster="<?= $assets_path ?>img/hero-placeholder.jpg"
                autoplay
@@ -24,18 +21,14 @@ include(__DIR__ . '/includes/header.php');
                loop
                playsinline
                preload="metadata"
-               style="opacity: 0;">
+               style="opacity: 0;"
+               >
             <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
         </video>
     </div>
-    
-    <!-- Decorative elements -->
-    <div class="hero-decoration hero-circle"></div>
-    <div class="hero-decoration hero-circle-2"></div>
-    
+    <!-- Overlay -->
     <!-- Overlay -->
     <div class="hero-overlay"></div>
-    
     <!-- Content -->
     <div class="hero-content">
         <h1>Herzlich Willkommen bei Der Hausmeister Michael GmbH</h1>
@@ -57,7 +50,6 @@ include(__DIR__ . '/includes/header.php');
             <span>✅ Zertifiziert für öffentliche Aufträge</span>
         </div>
     </div>
-    
     <!-- Scroll Indicator -->
     <div class="scroll-indicator">
         <span></span>
