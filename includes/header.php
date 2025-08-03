@@ -216,7 +216,7 @@ Este homepage: <?= $is_home ? 'Da' : 'Nu' ?>
         <div class="container">
             <!-- Logo -->
             <a href="<?= $base_url ?>" class="logo">
-                <img src="<?= $assets_path ?>img/logo-text-optimized.webp" 
+                <img src="<?= $assets_path ?>img/logo-text.webp" 
                      alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
                      class="logo-text" 
                      width="200" 
