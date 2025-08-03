@@ -152,7 +152,30 @@ $is_home = in_array($current_page, ['index.php', '']);
 </header>
 
 <!-- GLightbox JS -->
+<!-- GLightbox JS -->
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js" async></script>
+
+<!-- ÎNCARCĂ SWIPER ÎNAINTE DE MAIN.JS DACĂ E NECESAR -->
+<script>
+    // Detectăm dacă avem un Swiper pe pagină
+    const hasSwiper = document.querySelector('.videoProjectsSwiper, .projectsSwiper, .cinematic-carousel');
+
+    if (hasSwiper) {
+        // Funcție de încărcare Swiper
+        function loadSwiper() {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+            script.onload = () => {
+                console.log('Swiper loaded');
+                // Opțional: poți declanșa un eveniment personalizat aici dacă vrei
+            };
+            document.head.appendChild(script);
+        }
+
+        // Încarcă imediat Swiper
+        loadSwiper();
+    }
+</script>
 
 <!-- JavaScript principal -->
 <script src="<?= $assets_path ?>js/main.js" defer></script>
