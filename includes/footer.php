@@ -1,3 +1,7 @@
+<?php
+// Include Matomo tracking functionality
+require_once dirname(__DIR__) . '/matomo-track.php';
+?>
 <footer class="footer">
     <div class="container">
         <div class="footer-column">
@@ -9,9 +13,7 @@
             <h3>Kontakt</h3>
             <p><i class="fas fa-map-marker-alt"></i>Landsberger Allee 366, 12681 Berlin, Deutschland</p>
             <p><i class="fas fa-phone"></i> <a href="tel:+491626781242">+49 162 6781242</a></p>
-            <p><i class="fas fa-envelope"></i> <a href="mailto:info@hausmeistermichael-gmbh.de
-">info@hausmeistermichael-gmbh.de
-</a></p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:info@hausmeistermichael-gmbh.de">info@hausmeistermichael-gmbh.de</a></p>
         </div>
         <div class="footer-column">
             <h3>Öffnungszeiten</h3>
@@ -24,19 +26,21 @@
         <p>&copy; 2025 MeisterDach GmbH. Alle Rechte vorbehalten.</p>
     </div>
 </footer>
-
 <!-- Floating Buttons -->
 <div class="floating-buttons">
     <button class="quick-contact-button" aria-label="Contactați-ne rapid" aria-expanded="false">
         <i class="fas fa-phone" aria-hidden="true"></i>
+    </button>
     <div class="sub-buttons">
         <a href="tel:+491626781242" class="sub-button"><i class="fas fa-phone"></i></a>
         <a href="https://wa.me/491626781242" class="sub-button"><i class="fab fa-whatsapp"></i></a>
-        <a href="mailto:info@hausmeistermichael-gmbh.de
-" class="sub-button"><i class="fas fa-envelope"></i></a>
+        <a href="mailto:info@hausmeistermichael-gmbh.de" class="sub-button"><i class="fas fa-envelope"></i></a>
     </div>
 </div>
 
-
+<?php
+// Track page view with Matomo
+trackMatomo();
+?>
 </body>
 </html>
