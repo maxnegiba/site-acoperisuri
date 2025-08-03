@@ -11,34 +11,29 @@ include(__DIR__ . '/includes/header.php');
 
 
 <!-- HERO SECTION -->
-<section class="hero-section" aria-label="Willkommen bei Der Hausmeister Michael GmbH – Ihr Dachdecker in Berlin und Brandenburg">
-    <div class="hero-video-container">
-        <!-- Fallback image (background) -->
-        <div class="video-placeholder" 
-             style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');">
+<section class="hero-section">
+    <div class="hero-video-container" id="hero-video-container">
+        <div class="video-placeholder"
+             style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"
+             fetchpriority="high">
         </div>
-        <!-- Hero Video -->
-        <video class="hero-video"
+
+        <video id="hero-video"
+               class="hero-video"
                poster="<?= $assets_path ?>img/hero-placeholder.jpg"
-               autoplay
-               muted
-               loop
-               playsinline
-               preload="metadata">
+               autoplay muted loop playsinline preload="metadata">
             <source src="<?= $assets_path ?>video/hero-video.mp4" type="video/mp4">
-            <!-- Fallback image if video not supported -->
-            <img src="<?= $assets_path ?>img/hero-placeholder.jpg" alt="Dachdeckerarbeiten in Berlin - Blick auf ein saniertes Dach">
         </video>
     </div>
 
     <!-- Decorative elements -->
-    <div class="hero-decoration hero-circle" aria-hidden="true"></div>
-    <div class="hero-decoration hero-circle-2" aria-hidden="true"></div>
+    <div class="hero-decoration hero-circle"></div>
+    <div class="hero-decoration hero-circle-2"></div>
 
-    <!-- Overlay for text readability -->
-    <div class="hero-overlay" aria-hidden="true"></div>
+    <!-- Overlay -->
+    <div class="hero-overlay"></div>
 
-    <!-- Hero Content -->
+    <!-- Content -->
     <div class="hero-content">
         <h1>Herzlich Willkommen bei Der Hausmeister Michael GmbH</h1>
         <h2>Wir schützen Ihr Eigentum im Neubau und Bestand durch das traditionelle Dachdeckerhandwerk.</h2>
@@ -51,11 +46,10 @@ include(__DIR__ . '/includes/header.php');
             <br><strong>Über 20 Jahre Erfahrung.</strong>
             <br>Bund, Länder, Gemeinden & Privatkunden vertrauen uns.
         </p>
-        <a href="contact.php" class="cta-button" aria-label="Kontaktformular öffnen – unverbindliche Anfrage stellen">
-            Jetzt unverbindlich anfragen
-        </a>
+        <a href="contact.php" class="cta-button">Jetzt unverbindlich anfragen</a>
+
         <!-- Trust Badges -->
-        <div class="trust-badges" id="trust-info">
+        <div class="trust-badges">
             <span>🏆 20+ Jahre Meisterbetrieb</span>
             <span>📍 Berlin · Potsdam · Frankfurt (Oder)</span>
             <span>✅ Zertifiziert für öffentliche Aufträge</span>
@@ -63,7 +57,7 @@ include(__DIR__ . '/includes/header.php');
     </div>
 
     <!-- Scroll Indicator -->
-    <div class="scroll-indicator" aria-hidden="true">
+    <div class="scroll-indicator">
         <span></span>
     </div>
 </section>

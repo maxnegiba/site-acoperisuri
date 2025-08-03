@@ -276,34 +276,38 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
    
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.5/dist/js/lightbox.min.js" defer crossorigin></script>
 
-   <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const video = document.querySelector(".hero-video");
-    const container = document.querySelector(".hero-video-container");
+<script>
+/* Hero-video fade-in fix */
+(function () {
+    const container   = document.getElementById('hero-video-container');
+    const video       = document.getElementById('hero-video');
 
-    if (video) {
-        // When video starts playing, mark as loaded
-        video.addEventListener("play", () => {
-            video.setAttribute("data-loaded", "true");
-            container.classList.add("video-loaded");
-        });
-
-        // If video fails to load, use fallback
-        video.addEventListener("error", () => {
-            console.warn("Hero video failed to load. Using fallback image.");
-            container.classList.add("video-loaded");
-        });
-
-        // As a backup, after 2s assume it's loaded (or failed)
-        setTimeout(() => {
-            if (!video.hasAttribute("data-loaded")) {
-                video.setAttribute("data-loaded", "true");
-                container.classList.add("video-loaded");
-            }
-        }, 2000);
+    if (!container || !video) {
+        /* Gracefully abort if the markup isn’t present */
+        return;
     }
-});
-</script> 
+
+    /* When the video is ready to play, fade it in */
+    const onCanPlay = () => {
+        video.setAttribute('data-loaded', 'true');          // triggers CSS opacity
+        container.classList.add('video-loaded');            // hides fallback img
+        video.style.opacity = '1';                          // extra safety
+    };
+
+    /* Events that signal the video is ready */
+    if (video.readyState >= 2) {
+        onCanPlay();                                        // already loaded
+    } else {
+        video.addEventListener('loadeddata', onCanPlay);    // loaded later
+        video.addEventListener('canplay', onCanPlay);       // fallback
+    }
+
+    /* Extra: if the video fails, leave the placeholder visible */
+    video.addEventListener('error', () => {
+        container.classList.remove('video-loaded');
+    });
+})();
+</script>
 </head>
 <body>
     <!-- Depanare - comentariu HTML cu informații utile (șterge în producție) -->
