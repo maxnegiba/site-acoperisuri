@@ -1,20 +1,16 @@
 <?php
-// Depanare - activare afișare erori (dezactivează în producție)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 // Determină URL-ul absolut al root-ului site-ului
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
 $host = $_SERVER['HTTP_HOST'];
 $base_url = $protocol . $host . '/';
 $assets_path = $base_url . 'assets/';
 
-// Determină pagina curentă pentru meniul activ și logica CSS
+// Determină pagina curentă pentru meniul activ
 $current_page = basename($_SERVER['PHP_SELF']);
 $request_uri = $_SERVER['REQUEST_URI'];
 $is_home = ($current_page === 'index.php' || $request_uri === '/' || $request_uri === '/');
 
-// Asigură-te că $page_title și $page_description sunt definite pentru fiecare pagină
+// Asigură că $page_title și $page_description sunt definite
 if (!isset($page_title)) {
     $page_title = 'MeisterDach - Dachdecker Meisterbetrieb';
 }
@@ -25,7 +21,11 @@ if (!isset($page_description)) {
 // Funcție pentru a determina toate fișierele CSS necesare
 function getRequiredCSSFiles($current_page, $assets_path, $is_home) {
     $css_files = [];
-    $css_files[] = $assets_path . 'css/main.css'; // Întotdeauna încarcă main.css
+    
+    // Întotdeauna încarcă main.css pentru toate paginile
+    $css_files[] = $assets_path . 'css/main.css';
+    
+    // Pentru paginile non-homepage, adaugă și CSS-ul specific
     if (!$is_home) {
         $page_specific_css = [
             'contact.php' => $assets_path . 'css/contact.css',
@@ -33,21 +33,17 @@ function getRequiredCSSFiles($current_page, $assets_path, $is_home) {
             'projects.php' => $assets_path . 'css/projects.css',
             'about.php' => $assets_path . 'css/about.css'
         ];
+        
         if (isset($page_specific_css[$current_page])) {
             $css_files[] = $page_specific_css[$current_page];
         }
     }
+    
     return $css_files;
 }
 
+// Obține toate fișierele CSS necesare
 $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home);
-
-// Adaugă headere de securitate și cache (rezolvă problemele de securitate și cache din insights)
-header("Content-Security-Policy: default-src 'self'; script-src 'self' $assets_path; style-src 'self' $assets_path; img-src 'self' data: $assets_path; media-src 'self' $assets_path; font-src 'self' $assets_path; require-trusted-types-for 'script';");
-header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
-header("Cross-Origin-Opener-Policy: same-origin");
-header("X-Frame-Options: SAMEORIGIN");
-header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse statice
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -57,21 +53,45 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($page_description, ENT_QUOTES, 'UTF-8') ?>">
     
-    <!-- Preload resurse critice pentru afișarea inițială (reduce LCP) -->
+    <!-- DNS Prefetch și Preconnect pentru optimizare -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- Preload resurse critice -->
+    <link rel="preload" href="<?= $assets_path ?>css/main.css" as="style">
+    <link rel="preload" href="<?= $assets_path ?>img/logo-text-optimized.webp" as="image" fetchpriority="high">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    
     <?php if ($is_home): ?>
-        <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
+    <!-- Preload pentru homepage -->
+    <link rel="preload" href="<?= $assets_path ?>img/hero-poster.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
     <?php endif; ?>
-    <link rel="preload" href="<?= $assets_path ?>img/logo-text.webp" as="image" fetchpriority="high">
-    <link rel="preload" href="<?= $assets_path ?>img/team-hero.webp" as="image" fetchpriority="high">
-    <link rel="preload" href="<?= $assets_path ?>img/loading.gif" as="image" fetchpriority="high"> <!-- Pentru lightbox, dacă folosit -->
     
-    <!-- Preload fonturi critice (reduce render delay în LCP) -->
-    <link rel="preload" href="<?= $assets_path ?>fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="<?= $assets_path ?>fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
-    
-    <!-- CSS Critic Inline pentru Header (prevenire FOUC și CLS) -->
+    <!-- CSS Critic Inline pentru eliminarea FOUC -->
     <style>
-        /* === CRITICAL HEADER STYLES - INLINE === */
+        /* === CRITICAL CSS === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header Critical Styles */
         .header {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.95));
             backdrop-filter: blur(20px);
@@ -85,8 +105,14 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
             z-index: 1010;
             height: 100px;
             padding: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            contain: layout; /* Previne CLS */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            will-change: transform;
+            contain: layout style paint;
+        }
+        
+        .header.scrolled {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         
         .header .container {
@@ -101,7 +127,29 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
             position: relative;
         }
         
-        /* === DESKTOP NAVIGATION - CRITICAL PARTS === */
+        /* Logo Critical */
+        .logo {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            text-decoration: none;
+            padding: 0;
+            z-index: 1011;
+            transition: transform 0.3s ease;
+            gap: 8px;
+            margin-right: auto;
+        }
+        
+        .logo-text {
+            width: 200px;
+            height: 50px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+            transition: all 0.3s ease;
+            contain: layout;
+        }
+        
+        /* Navigation Critical */
         .nav-desktop {
             display: flex;
             align-items: center;
@@ -125,10 +173,6 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
             align-items: center;
         }
         
-        .nav-desktop li {
-            position: relative;
-        }
-        
         .nav-desktop a {
             text-decoration: none;
             color: #2c3e50;
@@ -149,24 +193,79 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
             transform: translateY(-1px);
         }
         
-        /* === MOBILE NAVIGATION - CRITICAL PARTS (hidden by default) === */
-        .mobile-nav,
+        /* Mobile Navigation - Hidden by default */
         .hamburger,
-        .nav-mobile {
+        .nav-mobile,
+        .mobile-overlay {
             display: none;
         }
         
-        /* === MEDIA QUERY pentru mobil - CRITICAL === */
+        /* Main content spacing */
+        main {
+            flex: 1;
+            width: 100%;
+            margin-top: 100px;
+            contain: layout;
+        }
+        
+        /* Hero Section Critical (Homepage) */
+        <?php if ($is_home): ?>
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #000;
+            contain: layout;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 995;
+            aspect-ratio: 16/9;
+            background-color: #000;
+            contain: layout style paint;
+            will-change: transform, filter;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1001;
+            text-align: center;
+            max-width: 1200px;
+            width: 90%;
+            padding: 2rem;
+            color: white;
+        }
+        <?php endif; ?>
+        
+        /* Typography Critical */
+        section h1, article h1, aside h1, nav h1 {
+            font-size: 2.5rem !important;
+        }
+        
+        /* Mobile Critical */
         @media (max-width: 991.98px) {
             .nav-desktop,
             .header .cta-button {
                 display: none;
-            }
-            
-            .mobile-nav,
-            .hamburger,
-            .nav-mobile {
-                display: block;
             }
             
             .hamburger {
@@ -184,6 +283,9 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
                 cursor: pointer;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 transition: all 0.3s ease;
+                min-width: 44px;
+                min-height: 44px;
+                z-index: 1012;
             }
             
             .hamburger span {
@@ -215,104 +317,119 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
                 z-index: 1008;
                 overflow-y: auto;
                 border-right: 1px solid rgba(211, 47, 47, 0.1);
+                display: block;
             }
             
             .nav-mobile.active {
                 left: 0;
+            }
+            
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1007;
+                display: block;
+            }
+            
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
             }
         }
         
         @media (max-width: 768px) {
             .header { height: 80px; }
             .nav-mobile { top: 80px; height: calc(100vh - 80px); }
-            .header.scrolled { height: 70px; }
-            .logo-main, .logo-text { max-height: 40px; }
-            .header.scrolled .logo-main,
-            .header.scrolled .logo-text { max-height: 35px; }
+            main { margin-top: 80px; }
+            .logo-text { width: 160px; height: 40px; }
+            section h1, article h1, aside h1, nav h1 { font-size: 2rem !important; }
         }
         
-        /* === PRINT - CRITICAL === */
-        @media print {
-            .header { position: static; box-shadow: none; background: white; }
-            .nav-desktop a, .nav-mobile a { color: black !important; }
-        }
-        
-        /* Adaugă pentru a rezolva avertismentul h1 */
-        section h1, article h1, aside h1, nav h1 { font-size: 2em; }
+        /* Prevent FOUC */
+        .no-js { visibility: hidden; }
     </style>
     
-    <!-- Încărcare CSS pentru toate paginile (local, preload) -->
+    <!-- Încărcare CSS principal -->
     <?php foreach ($required_css_files as $css_file): ?>
-    <link rel="preload" href="<?= $css_file ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $css_file ?>"></noscript>
-<?php endforeach; ?>
+    <link rel="stylesheet" href="<?= $css_file ?>">
+    <?php endforeach; ?>
     
-    <!-- External libraries - local și preload (reduce terțe părți) -->
-    <link rel="preload" href="<?= $assets_path ?>css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/all.min.css"></noscript>
+    <!-- External CSS - încărcare asincronă -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
-    <link rel="preload" href="<?= $assets_path ?>css/lightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/lightbox.min.css"></noscript>
+    <!-- Swiper CSS -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
     
-    <link rel="preload" href="<?= $assets_path ?>css/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $assets_path ?>css/swiper-bundle.min.css"></noscript>
+    <!-- GLightbox CSS (înlocuiește Lightbox2) -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css"></noscript>
     
-    <!-- JavaScript - local și defer -->
-    <script src="<?= $assets_path ?>js/main.js" defer></script>
-    <script src="<?= $assets_path ?>js/swiper-bundle.min.js" defer></script>
-    <script src="<?= $assets_path ?>js/lightbox.min.js" defer></script>
-    
-    <!-- Script inline pentru hero-video fade-in (din codul tău original) -->
+    <!-- JavaScript Critic -->
     <script>
-        (function () {
-            const container = document.getElementById('hero-video-container');
-            const video = document.getElementById('hero-video');
-            if (!container || !video) return;
-            const onCanPlay = () => {
-                video.setAttribute('data-loaded', 'true');
-                container.classList.add('video-loaded');
-                video.style.opacity = '1';
-            };
-            if (video.readyState >= 2) {
-                onCanPlay();
-            } else {
-                video.addEventListener('loadeddata', onCanPlay);
-                video.addEventListener('canplay', onCanPlay);
+        // Remove no-js class
+        document.documentElement.classList.remove('no-js');
+        
+        // Early header height detection
+        window.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.header');
+            if (header) {
+                document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
             }
-            video.addEventListener('error', () => {
-                container.classList.remove('video-loaded');
-            });
-        })();
+        });
+    </script>
+    
+    <!-- JavaScript - încărcare optimizată -->
+    <script src="<?= $assets_path ?>js/main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js" defer></script>
+    
+    <!-- Structured Data pentru SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Der Hausmeister Michael GmbH",
+        "description": "Professionelle Dachdecker, Klempner & Zimmermann in Berlin & Brandenburg",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Berlin",
+            "addressRegion": "BE",
+            "addressCountry": "DE"
+        },
+        "telephone": "+49XXXXXXXXX",
+        "url": "<?= $base_url ?>",
+        "priceRange": "€€",
+        "openingHours": "Mo-Fr 08:00-18:00"
+    }
     </script>
 </head>
-<body>
-    <!-- Depanare - comentariu HTML cu informații utile (șterge în producție) -->
-    <!-- 
-        Pagină curentă: <?= $current_page ?>
-        URL de bază: <?= $base_url ?>
-        Cale resurse: <?= $assets_path ?>
-        Este homepage: <?= $is_home ? 'Da' : 'Nu' ?>
-        Fișiere CSS încărcate: <?= implode(', ', $required_css_files) ?>
-    -->
+<body class="no-js">
+    <!-- Skip to content link for accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
     
     <header class="header">
         <div class="container">
             <!-- Logo -->
             <a href="<?= $base_url ?>" class="logo">
-                <picture>
-                    <source srcset="<?= $assets_path ?>img/logo-text.webp" type="image/webp">
-                    <img src="<?= $assets_path ?>img/logo-text.jpg" 
-                         alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
-                         class="logo-text" 
-                         width="200" 
-                         height="50"
-                         loading="eager"
-                         fetchpriority="high"
-                         style="width: 200px; height: 50px;">
-                </picture>
+                <img src="<?= $assets_path ?>img/logo-text-optimized.webp" 
+                     alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
+                     class="logo-text" 
+                     width="200" 
+                     height="50"
+                     loading="eager"
+                     decoding="async">
             </a>
             
-            <!-- Meniu Desktop -->
+            <!-- Desktop Navigation -->
             <nav class="nav-desktop" aria-label="Hauptnavigation">
                 <ul>
                     <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
@@ -323,14 +440,15 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
                 </ul>
             </nav>
             
-            <!-- Meniu Mobil -->
-            <button class="hamburger mobile-nav" aria-label="Deschide meniul" aria-controls="nav-mobile" aria-expanded="false">
+            <!-- Mobile Menu Button -->
+            <button class="hamburger" aria-label="Menü öffnen" aria-controls="nav-mobile" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
             
-            <nav class="nav-mobile" id="nav-mobile">
+            <!-- Mobile Navigation -->
+            <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile Navigation">
                 <ul>
                     <li><a href="<?= $base_url ?>" class="<?= $is_home ? 'active' : '' ?>">Heim</a></li>
                     <li><a href="<?= $base_url ?>about.php" class="<?= $current_page === 'about.php' ? 'active' : '' ?>">Über uns</a></li>
@@ -345,4 +463,4 @@ header("Cache-Control: max-age=31536000, public"); // Cache 1 an pentru resurse 
     <!-- Mobile overlay -->
     <div class="mobile-overlay"></div>
     
-    <main>
+    <main id="main">
