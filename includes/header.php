@@ -156,30 +156,43 @@ $is_home = in_array($current_page, ['index.php', '']);
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js" async></script>
 
 <!-- ÎNCARCĂ SWIPER ÎNAINTE DE MAIN.JS DACĂ E NECESAR -->
-<script>
-    // Detectăm dacă avem un Swiper pe pagină
-    const hasSwiper = document.querySelector('.videoProjectsSwiper, .projectsSwiper, .cinematic-carousel');
+    <!-- Load Swiper JS and CSS unconditionally but only if needed -->
+    <script>
+        (function() {
+            // Use the same selectors as main.js to check if Swiper is needed
+            const needsSwiper = document.querySelector(
+                '.videoProjectsSwiper, .projectsSwiper, .cinematic-carousel'
+            );
 
-    if (hasSwiper) {
-        // Funcție de încărcare Swiper
-        function loadSwiper() {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
-            script.onload = () => {
-                console.log('Swiper loaded');
-                // Opțional: poți declanșa un eveniment personalizat aici dacă vrei
-            };
-            document.head.appendChild(script);
-        }
+            if (needsSwiper) {
+                // --- Load Swiper CSS ---
+                // Check if CSS is not already added (important for preload matching)
+                const cssUrl = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
+                if (!document.querySelector(`link[href="${cssUrl}"]`)) {
+                    const cssLink = document.createElement('link');
+                    cssLink.rel = 'stylesheet';
+                    cssLink.href = cssUrl;
+                    // Add it early to potentially use the preloaded resource
+                    document.head.appendChild(cssLink);
+                }
 
-        // Încarcă imediat Swiper
-        loadSwiper();
-    }
-</script>
+                // --- Load Swiper JS ---
+                const jsUrl = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+                // Check if script is not already added or loaded
+                if (!window.Swiper && !document.querySelector(`script[src="${jsUrl}"]`)) {
+                    const script = document.createElement('script');
+                    script.src = jsUrl;
+                    script.async = true; // Load asynchronously
+                    // Add script to head to start loading
+                    document.head.appendChild(script);
+                    console.log('Swiper JS loading initiated...');
+                }
+            }
+        })();
+    </script>
 
-<!-- JavaScript principal -->
-<script src="<?= $assets_path ?>js/main.js" defer></script>
-
+    <!-- Main JavaScript (deferred, runs after HTML is parsed) -->
+    <script src="<?= $assets_path ?>js/main.js" defer></script>
 
 
 <body class="no-js">
