@@ -352,7 +352,9 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     height: 100%;
     padding: 0 32px;
     position: relative;
+    contain: layout;
 }
+
 
 /* === LOGO === */
 .logo {
@@ -790,32 +792,29 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
    HERO SECTION
    ========================================================================== */
 
+/* Actualizează stilurile pentru hero section */
 .hero-section {
-    .hero-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    position: relative;
     min-height: 100vh;
     width: 100%;
-    position: relative;
+    contain: layout;
+    aspect-ratio: 16/9;
     overflow: hidden;
-}
 }
 
 .hero-video-container {
-      position: absolute;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 1;
-    /* Prevent layout shift */
-    min-height: 100vh;
+    contain: layout;
+    aspect-ratio: 16/9;
 }
 
 .video-placeholder {
-     position: absolute;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -823,8 +822,38 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     background-size: cover;
     background-position: center;
     z-index: 1;
-    /* Prevent layout shift */
-    min-height: 100vh;
+    contain: layout;
+    aspect-ratio: 16/9;
+    display: block;
+    will-change: transform;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-hero-overlay);
+    contain: layout;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem;
+    color: white;
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    min-height: calc(100vh - var(--header-height));
+    contain: layout;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -873,10 +902,11 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: var(--z-hero-overlay);
+    contain: layout;
 }
 
 .hero-content {
-     position: relative;
+    position: relative;
     z-index: 10;
     text-align: center;
     padding: 2rem;
@@ -884,9 +914,12 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     width: 100%;
     max-width: 1200px;
     box-sizing: border-box;
-    /* Prevent content from growing beyond available space */
-    max-height: calc(100vh - var(--header-height));
-    overflow-y: auto;
+    min-height: calc(100vh - var(--header-height));
+    contain: layout;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -1135,6 +1168,8 @@ p { font-size: clamp(1rem, 1vw, 1.125rem); }
     align-items: center;
     text-align: center;
     border: 1px solid rgba(211, 47, 47, 0.1);
+    min-height: 400px; /* Adaugă înălțime minimă */
+    contain: layout;
 }
 
 .service-card:nth-child(1) { animation-delay: 0.2s; }

@@ -30,15 +30,14 @@ const batchDOMUpdates = (updates) => {
 function updateHeaderState() {
     if (!header) return;
     
-    batchDOMUpdates([
-        {
-            element: header,
-            styles: {
-                transform: window.scrollY > 50 ? 'translateY(-5px)' : 'translateY(0)',
-                boxShadow: window.scrollY > 50 ? '0 4px 20px rgba(0, 0, 0, 0.1)' : '0 8px 32px rgba(0, 0, 0, 0.08)'
-            }
-        }
-    ]);
+    requestAnimationFrame(() => {
+        const isScrolled = window.scrollY > 50;
+        header.classList.toggle('scrolled', isScrolled);
+        
+        // Folosește transform pentru a evita rearanjarea
+        header.style.transform = isScrolled ? 'translateY(-5px)' : 'translateY(0)';
+        header.style.boxShadow = isScrolled ? '0 4px 20px rgba(0, 0, 0, 0.1)' : '0 8px 32px rgba(0, 0, 0, 0.08)';
+    });
 }
 /* ---------------------------------------------------------
    1.  CONFIG / UTILS
@@ -78,12 +77,10 @@ window.addEventListener('scroll', debounce(updateHeaderState, 50));
 function syncHeroPadding() {
     if (!heroSection || !header) return;
     
-    // Folosește requestAnimationFrame pentru a preveni layout forțat
     requestAnimationFrame(() => {
-        // Obține dimensiunile o singură dată
         const headerHeight = header.offsetHeight;
         
-        // Aplică toate schimbările deodată pentru a minimiza reflow
+        // Aplică toate schimbările deodată
         const heroStyles = {
             paddingTop: `${headerHeight}px`,
             marginTop: `-${headerHeight}px`,
@@ -92,7 +89,6 @@ function syncHeroPadding() {
         
         Object.assign(heroSection.style, heroStyles);
         
-        // Actualizează și containerul video dacă există
         const videoContainer = heroSection.querySelector('.hero-video-container');
         if (videoContainer) {
             const containerStyles = {
@@ -102,7 +98,6 @@ function syncHeroPadding() {
             Object.assign(videoContainer.style, containerStyles);
         }
         
-        // Actualizează overlay-ul
         const overlay = heroSection.querySelector('.hero-overlay');
         if (overlay) {
             const overlayStyles = {

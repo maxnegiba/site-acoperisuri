@@ -13,7 +13,13 @@ include(__DIR__ . '/includes/header.php');
 <!-- HERO SECTION -->
 <section class="hero-section">
     <div class="hero-video-container">
-        <div class="video-placeholder" style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg');"></div>
+        <div class="video-placeholder" 
+     style="background-image: url('<?= $assets_path ?>img/hero-placeholder.jpg'); 
+            width: 100%; 
+            height: 100vh; 
+            min-height: 600px;"
+     fetchpriority="high">
+</div>
         <video class="hero-video"
                poster="<?= $assets_path ?>img/hero-placeholder.jpg"
                autoplay

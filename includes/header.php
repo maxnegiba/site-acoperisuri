@@ -62,8 +62,28 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
         <link rel="preload" href="<?= $assets_path ?>video/hero-video.mp4" as="video" type="video/mp4">
     <?php endif; ?>
     <link rel="preload" href="<?= $assets_path ?>img/logo-text.jpg" as="image">
-    
+    <!-- Adaugă în head -->
+<link rel="preload" href="<?= $assets_path ?>img/hero-placeholder.jpg" as="image" fetchpriority="high">
+<!-- În header.php -->
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
     <!-- CSS Critic Inline pentru Header - Asigură afișarea corectă fără FOUC -->
+     <!-- În header.php -->
+<script>
+    // Încărcare resurse critice
+    function loadScript(src, async = true, defer = true) {
+        const script = document.createElement('script');
+        script.src = src;
+        if (async) script.async = true;
+        if (defer) script.defer = true;
+        document.head.appendChild(script);
+    }
+    
+    // Încarcă Swiper doar când este necesar
+    if (document.querySelector('.videoProjectsSwiper')) {
+        loadScript('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js');
+    }
+</script>
     <style>
         /* === CRITICAL HEADER STYLES - INLINE === */
         .header {
@@ -271,13 +291,20 @@ $required_css_files = getRequiredCSSFiles($current_page, $assets_path, $is_home)
     <header class="header">
         <div class="container">
             <!-- Logo -->
-            <a href="<?= $base_url ?>" class="logo">
-                <img src="<?= $assets_path ?>img/logo-text.jpg" 
-     alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
-     class="logo-text" 
-     width="200" 
-     height="50">
-            </a>
+            <!-- Înlocuiește logo-ul existent cu: -->
+<a href="<?= $base_url ?>" class="logo">
+    <picture>
+        <source srcset="<?= $assets_path ?>img/logo-text.webp" type="image/webp">
+        <img src="<?= $assets_path ?>img/logo-text.jpg" 
+             alt="Dachdecker Meisterbetrieb Der Hausmeister Michael GmbH" 
+             class="logo-text" 
+             width="200" 
+             height="50"
+             loading="eager"
+             fetchpriority="high"
+             style="width: 200px; height: 50px;">
+    </picture>
+</a>
             
             <!-- Meniu Desktop -->
             <nav class="nav-desktop" aria-label="Hauptnavigation">
