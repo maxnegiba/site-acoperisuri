@@ -157,15 +157,7 @@ $is_home = in_array($current_page, ['index.php', '']);
 <!-- JavaScript principal -->
 <script src="<?= $assets_path ?>js/main.js" defer></script>
 
-<!-- Swiper doar dacă e necesar -->
-<script>
-    if (document.querySelector('.videoProjectsSwiper, .projectsSwiper, .cinematic-carousel')) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
-        script.defer = true;
-        document.body.appendChild(script);
-    }
-</script>
+
 
 <body class="no-js">
     <!-- Skip to content link for accessibility -->
