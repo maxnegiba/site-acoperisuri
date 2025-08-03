@@ -197,7 +197,7 @@ $is_home = in_array($current_page, ['index.php', '']);
 
 <body class="no-js">
     <!-- Skip to content link for accessibility -->
-    <a href="#main" class="skip-link">Skip to main content</a>
+    <a href="#main" class="skip-link">Skip to main content.</a>
     
     <header class="header">
         <div class="container">
